@@ -8,14 +8,15 @@ st.write("""
 Space Repetition System SQL practice
 """)
 
-option = st.selectbox(
-    "How would you like to review?",
-    ("Joins", "GroupBy", "Windows Functions"),
-    index=None,
-    placeholder="Select a theme...",
-)
+with st.sidebar:
+    option = st.selectbox(
+        "How would you like to review?",
+        ("Joins", "GroupBy", "Windows Functions"),
+        index=None,
+        placeholder="Select a theme...",
+    )
 
-st.write("You selected:", option)
+    st.write("You selected:", option)
 
 
 

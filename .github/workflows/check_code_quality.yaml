@@ -1,9 +1,5 @@
 name: check_code_quality
-on:
-  pull_request:
-    branches:
-      - develop
-
+on: pull_request
 jobs:
   lint:
     runs-on: ubuntu-latest

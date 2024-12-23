@@ -1,5 +1,5 @@
 # pylint: disable=missing-module-docstring
-
+import ast
 
 import duckdb
 import streamlit as st
@@ -23,9 +23,9 @@ with st.sidebar:
 
 st.header("enter your code:")
 query = st.text_area(label="votre code SQL ici", key="user_input")
-# if sql_query:
-#     result = duckdb.sql(sql_query).df()
-#     st.dataframe(result)
+if query:
+   result = con.execute(query).df()
+   st.dataframe(result)
 #
 #     try:
 #         result = result[solution_df.columns]
@@ -40,15 +40,19 @@ query = st.text_area(label="votre code SQL ici", key="user_input")
 #
 #     st.dataframe(result.compare(solution_df))
 #
-# tab2, tab3 = st.tabs(["Tables", "Solution"])
-#
-# with tab2:
-#     st.write("table : beverages")
-#     st.dataframe(beverages)
-#     st.write("table : food_items")
-#     st.dataframe(food_items)
-#     st.write("expected :")
-#     st.dataframe(solution_df)
-#
-# with tab3:
-#     st.code(ANSWER_STR)
+tab2, tab3 = st.tabs(["Tables", "Solution"])
+
+with tab2:
+    # Transform string into a list even it looks a like at the first view
+    exercise_tables = ast.literal_eval(exercise.loc[0, "tables"])
+    for table in exercise_tables:
+        st.write(f"table: {table}")
+        df_table = con.execute(f"SELECT * FROM {table}").df()
+        st.dataframe(df_table)
+
+with tab3:
+    exercise_name = exercise.loc[0, "exercise_name"]
+    with open("answers/beverages_and_food.sql", "r") as f:
+        answer = f.read()
+    st.code(answer)
+

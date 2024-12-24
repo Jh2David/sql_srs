@@ -16,9 +16,8 @@ data = {
     "last_reviewed": ["1980-01-01", "1970-01-01"],
 }
 memory_state_df = pd.DataFrame(data)
-con.execute("DROP TABLE memory_state")
-con.execute("CREATE TABLE memory_state AS SELECT * FROM memory_state_df")
-# con.execute("CREATE TABLE IF NOT EXISTS memory_state AS SELECT * FROM memory_state_df")
+con.execute("CREATE TABLE IF NOT EXISTS memory_state AS SELECT * FROM memory_state_df")
+
 
 # ------------------------------------------------------------
 # CROSS JOIN EXERCISES
@@ -41,8 +40,9 @@ muffin,3
 food_items = pd.read_csv(io.StringIO(csv2))
 con.execute("CREATE TABLE IF NOT EXISTS food_items AS SELECT * FROM food_items")
 
+
 sizes = """
-sizes
+size
 XS
 M
 L
@@ -50,9 +50,10 @@ XL
 """
 sizes = pd.read_csv(io.StringIO(sizes))
 con.execute("CREATE TABLE IF NOT EXISTS sizes AS SELECT * FROM sizes")
+print(con.execute("SHOW TABLES").fetchall())
 
 trademarks = """
-trademarks
+trademark
 Nike
 Asphalte
 Abercrombie
@@ -60,3 +61,6 @@ Lewis
 """
 trademarks = pd.read_csv(io.StringIO(trademarks))
 con.execute("CREATE TABLE IF NOT EXISTS trademarks AS SELECT * FROM trademarks")
+print(con.execute("SHOW TABLES").fetchall())
+
+con.close()

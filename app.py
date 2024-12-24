@@ -36,6 +36,9 @@ def check_users_solution(user_query: str) -> None:
     try:
         result = result[solution_df.columns]
         st.dataframe(result.compare(solution_df))
+        if result.compare(solution_df).shape == (0, 0):
+            st.write("Correct !")
+            st.balloons()
     except KeyError as e:
         st.write("Some columns are missing")
     n_lines_difference = result.shape[0] - solution_df.shape[0]

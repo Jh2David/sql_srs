@@ -1,6 +1,7 @@
 import io
-import pandas as pd
+
 import duckdb
+import pandas as pd
 
 con = duckdb.connect(database="data/exercises_sql_tables.duckdb", read_only=False)
 
@@ -9,15 +10,15 @@ con = duckdb.connect(database="data/exercises_sql_tables.duckdb", read_only=Fals
 # ------------------------------------------------------------
 
 data = {
-    "theme": ["cross_joins", "window_functions"],
-    "exercise_name": ["beverages_and_food", "simple_window"],
-    "tables": [["beverages", "food_items"], "simple_window"],
-    "last_reviewed": ["1970-01-01", "1970-01-01"],
-    "answer": ["SELECT * FROM beverages CROSS JOIN food_items", ""]
+    "theme": ["cross_joins", "cross_joins"],
+    "exercise_name": ["beverages_and_food", "sizes_and_trademarks"],
+    "tables": [["beverages", "food_items"], ["sizes", "trademarks"]],
+    "last_reviewed": ["1980-01-01", "1970-01-01"]
 }
 memory_state_df = pd.DataFrame(data)
-#con.execute("CREATE OR REPLACE TABLE memory_state AS SELECT * FROM memory_state_df")
-con.execute("CREATE TABLE IF NOT EXISTS memory_state AS SELECT * FROM memory_state_df")
+con.execute("DROP TABLE memory_state")
+con.execute("CREATE TABLE memory_state AS SELECT * FROM memory_state_df")
+#con.execute("CREATE TABLE IF NOT EXISTS memory_state AS SELECT * FROM memory_state_df")
 
 # ------------------------------------------------------------
 # CROSS JOIN EXERCISES
@@ -30,6 +31,7 @@ Tea,3
 """
 beverages = pd.read_csv(io.StringIO(csv))
 con.execute("CREATE TABLE IF NOT EXISTS beverages AS SELECT * FROM beverages")
+
 csv2 = """
 food_item,food_price
 cookie juice,2.5
@@ -38,3 +40,23 @@ muffin,3
 """
 food_items = pd.read_csv(io.StringIO(csv2))
 con.execute("CREATE TABLE IF NOT EXISTS food_items AS SELECT * FROM food_items")
+
+sizes = '''
+sizes
+XS
+M
+L
+XL
+'''
+sizes = pd.read_csv(io.StringIO(sizes))
+con.execute("CREATE TABLE IF NOT EXISTS sizes AS SELECT * FROM sizes")
+
+trademarks = '''
+trademarks
+Nike
+Asphalte
+Abercrombie
+Lewis
+'''
+trademarks = pd.read_csv(io.StringIO(trademarks))
+con.execute("CREATE TABLE IF NOT EXISTS trademarks AS SELECT * FROM trademarks")

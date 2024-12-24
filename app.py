@@ -1,50 +1,99 @@
 # pylint: disable=missing-module-docstring
 
+import logging
+import os
+from typing import Optional, Tuple
+
 import duckdb
+import pandas as pd
 import streamlit as st
+
+if "data" not in os.listdir():
+    print("creating folder data")
+    logging.error(os.listdir())
+    logging.error("creating folder data")
+    os.mkdir("data")
+
+if "exercises_sql_tables.duckdb" not in os.listdir("data"):
+    os.remove("data/exercises_sql_tables.duckdb")
+exec(open("init_db.py").read())
+# subprocess.run(["python", "init_db.py"])
 
 con = duckdb.connect(database="data/exercises_sql_tables.duckdb", read_only=False)
 
-with st.sidebar:
-    theme = st.selectbox(
-        "What would you like to review?",
-        ("cross_joins", "GroupBy", "Windows Functions"),
-        index=None,
-        placeholder="Select a theme...",
-    )
-    st.write("You selected:", theme)
 
-    exercise = (
-        con.execute(f"SELECT * FROM memory_state WHERE theme = '{theme}'")
-        .df()
-        .sort_values("last_reviewed")
-        .reset_index()
-    )
-    st.write(exercise)
-
-    exercise_name = exercise.loc[0, "exercise_name"]
-    with open(f"answers/{exercise_name}.sql", "r", encoding="utf-8") as f:
-        answer = f.read()
-
-    solution_df = con.execute(answer).df()
-
-st.header("enter your code:")
-query = st.text_area(label="Votre code SQL ici", key="user_input")
-if query:
-    result = con.execute(query).df()
+def check_users_solution(user_query: str) -> None:
+    """
+    Checks that user SQL query is correct by
+    1 : checking the columns
+    2 : checking the values
+    :param user_query: a string containing the query inserted by the user
+    :return:
+    """
+    result = con.execute(user_query).df()
     st.dataframe(result)
     try:
         result = result[solution_df.columns]
+        st.dataframe(result.compare(solution_df))
     except KeyError as e:
         st.write("Some columns are missing")
-
-    n_lines_differences = result.shape[0] - solution_df.shape[0]
-    if n_lines_differences != 0:
+    n_lines_difference = result.shape[0] - solution_df.shape[0]
+    if n_lines_difference != 0:
         st.write(
-            f"result has a {n_lines_differences} lines difference with the solution_df"
+            f"result has a {n_lines_difference} lines difference with the solution_df"
         )
 
-    st.dataframe(result.compare(solution_df))
+
+def get_exercise(
+    con,
+) -> Tuple[Optional[pd.DataFrame], Optional[str], Optional[pd.DataFrame]]:
+    """
+    Select a theme and return the corresponding exercise, its SQL solution, and its dataframe.
+
+    :param con: Connection to the DuckDB database.
+    :return: A tuple containing:
+             - exercise (pd.DataFrame): The exercise DataFrame.
+             - answer (str): The SQL solution as a string.
+             - solution_df (pd.DataFrame): The solution DataFrame.
+             If an error occurs, returns (None, None, None).
+    """
+
+    available_themes_df = con.execute("SELECT DISTINCT theme FROM memory_state").df()
+    theme = st.selectbox(
+        "What would you like to review?",
+        available_themes_df["theme"].unique(),
+        index=None,
+        placeholder="Select a theme...",
+    )
+    if theme:
+        st.write("You selected:", theme)
+        select_exercise_query = f"SELECT * FROM memory_state WHERE theme = '{theme}'"
+    else:
+        select_exercise_query = f"SELECT * FROM memory_state"
+    exercise = (
+        con.execute(select_exercise_query)
+        .df()
+        .sort_values("last_reviewed")
+        .reset_index(drop=True)
+    )
+    st.write(exercise)
+    exercise_name = exercise.loc[0, "exercise_name"]
+    with open(f"answers/{exercise_name}.sql", "r") as f:
+        answer = f.read()
+    solution_df = con.execute(answer).df()
+
+    return exercise, answer, solution_df
+
+
+with st.sidebar:
+    exercise, answer, solution_df = get_exercise(con)
+
+st.header("enter your code:")
+query = st.text_area(label="votre code SQL ici", key="user_input")
+
+
+if query:
+    check_users_solution(query)
 
 tab2, tab3 = st.tabs(["Tables", "Solution"])
 

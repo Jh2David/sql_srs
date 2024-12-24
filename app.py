@@ -2,6 +2,7 @@
 
 import logging
 import os
+from datetime import date, timedelta
 from typing import Optional, Tuple
 
 import duckdb
@@ -35,6 +36,9 @@ def check_users_solution(user_query: str) -> None:
     try:
         result = result[solution_df.columns]
         st.dataframe(result.compare(solution_df))
+        if result.compare(solution_df).shape == (0, 0):
+            st.write("Correct !")
+            st.balloons()
     except KeyError as e:
         st.write("Some columns are missing")
     n_lines_difference = result.shape[0] - solution_df.shape[0]
@@ -94,6 +98,18 @@ query = st.text_area(label="votre code SQL ici", key="user_input")
 
 if query:
     check_users_solution(query)
+
+for n_days in [2, 7, 21]:
+    if st.button(f"Revoir dans {n_days} jours"):
+        next_review = date.today() + timedelta(days=n_days)
+        con.execute(
+            f"UPDATE memory_state SET last_reviewed = '{next_review}' WHERE exercise_name = '{exercise.loc[0, 'exercise_name']}'"
+        )
+        st.rerun()
+
+if st.button("Reset"):
+    con.execute(f"UPDATE memory_state SET last_reviewed = '1970-01-01'")
+    st.rerun()
 
 tab2, tab3 = st.tabs(["Tables", "Solution"])
 

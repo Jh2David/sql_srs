@@ -2,8 +2,10 @@
 
 import logging
 import os
+from typing import Optional, Tuple
 
 import duckdb
+import pandas as pd
 import streamlit as st
 
 if "data" not in os.listdir():
@@ -19,12 +21,47 @@ exec(open("init_db.py").read())
 
 con = duckdb.connect(database="data/exercises_sql_tables.duckdb", read_only=False)
 
-with st.sidebar:
+
+def check_users_solution(user_query: str) -> None:
+    """
+    Checks that user SQL query is correct by
+    1 : checking the columns
+    2 : checking the values
+    :param user_query: a string containing the query inserted by the user
+    :return:
+    """
+    result = con.execute(user_query).df()
+    st.dataframe(result)
+    try:
+        result = result[solution_df.columns]
+        st.dataframe(result.compare(solution_df))
+    except KeyError as e:
+        st.write("Some columns are missing")
+    n_lines_difference = result.shape[0] - solution_df.shape[0]
+    if n_lines_difference != 0:
+        st.write(
+            f"result has a {n_lines_difference} lines difference with the solution_df"
+        )
+
+
+def get_exercise(
+    con,
+) -> Tuple[Optional[pd.DataFrame], Optional[str], Optional[pd.DataFrame]]:
+    """
+    Select a theme and return the corresponding exercise, its SQL solution, and its dataframe.
+
+    :param con: Connection to the DuckDB database.
+    :return: A tuple containing:
+             - exercise (pd.DataFrame): The exercise DataFrame.
+             - answer (str): The SQL solution as a string.
+             - solution_df (pd.DataFrame): The solution DataFrame.
+             If an error occurs, returns (None, None, None).
+    """
+
     available_themes_df = con.execute("SELECT DISTINCT theme FROM memory_state").df()
     theme = st.selectbox(
         "What would you like to review?",
         available_themes_df["theme"].unique(),
-        #  ("cross_joins", "GroupBy", "window_functions"),
         index=None,
         placeholder="Select a theme...",
     )
@@ -43,27 +80,20 @@ with st.sidebar:
     exercise_name = exercise.loc[0, "exercise_name"]
     with open(f"answers/{exercise_name}.sql", "r") as f:
         answer = f.read()
-
     solution_df = con.execute(answer).df()
+
+    return exercise, answer, solution_df
+
+
+with st.sidebar:
+    exercise, answer, solution_df = get_exercise(con)
 
 st.header("enter your code:")
 query = st.text_area(label="votre code SQL ici", key="user_input")
+
+
 if query:
-    result = con.execute(query).df()
-    st.dataframe(result)
-
-    try:
-        result = result[solution_df.columns]
-        st.dataframe(result.compare(solution_df))
-    except KeyError as e:
-        st.write("Some columns are missing")
-
-    n_lines_difference = result.shape[0] - solution_df.shape[0]
-    if n_lines_difference != 0:
-        st.write(
-            f"result has a {n_lines_difference} lines difference with the solution_df"
-        )
-
+    check_users_solution(query)
 
 tab2, tab3 = st.tabs(["Tables", "Solution"])
 

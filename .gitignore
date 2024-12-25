@@ -4,3 +4,4 @@ venv/
 test_db.py
 data/
 
+functions/__pycache__

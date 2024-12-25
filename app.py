@@ -1,5 +1,6 @@
 # pylint: disable=missing-module-docstring
 
+import ast
 import logging
 import os
 from datetime import date, timedelta
@@ -73,19 +74,19 @@ def get_exercise(
         select_exercise_query = f"SELECT * FROM memory_state WHERE theme = '{theme}'"
     else:
         select_exercise_query = f"SELECT * FROM memory_state"
-    exercise = (
+    exercise_df = (
         con.execute(select_exercise_query)
         .df()
         .sort_values("last_reviewed")
         .reset_index(drop=True)
     )
-    st.write(exercise)
-    exercise_name = exercise.loc[0, "exercise_name"]
+    st.write(exercise_df)
+    exercise_name = exercise_df.loc[0, "exercise_name"]
     with open(f"answers/{exercise_name}.sql", "r") as f:
-        answer = f.read()
-    solution_df = con.execute(answer).df()
+        sql_answer = f.read()
+    solution = con.execute(sql_answer).df()
 
-    return exercise, answer, solution_df
+    return exercise_df, sql_answer, solution
 
 
 with st.sidebar:
@@ -102,7 +103,10 @@ for n_days in [2, 7, 21]:
     if st.button(f"Revoir dans {n_days} jours"):
         next_review = date.today() + timedelta(days=n_days)
         con.execute(
-            f"UPDATE memory_state SET last_reviewed = '{next_review}' WHERE exercise_name = '{exercise.loc[0, 'exercise_name']}'"
+            f"""
+            UPDATE memory_state SET last_reviewed = '{next_review}' 
+            WHERE exercise_name = '{exercise.loc[0, 'exercise_name']}'
+            """
         )
         st.rerun()
 
@@ -113,7 +117,7 @@ if st.button("Reset"):
 tab2, tab3 = st.tabs(["Tables", "Solution"])
 
 with tab2:
-    exercise_tables = exercise.loc[0, "tables"]
+    exercise_tables = ast.literal_eval(exercise.loc[0, "tables"])
     for table in exercise_tables:
         st.write(f"table: {table}")
         df_table = con.execute(f"SELECT * FROM {table}").df()

@@ -1,9 +1,13 @@
-import pandas as pd
 import io
+
 import duckdb
+import pandas as pd
+
 
 def init_cross_joins(con):
-    # Exemple de données pour cross join
+    # ----------------------------------------------------------------------------------
+    # EXERCICE 01
+    # ----------------------------------------------------------------------------------
     csv = """
     beverage,price
     orange juice,2.5
@@ -23,11 +27,70 @@ def init_cross_joins(con):
     con.execute("CREATE TABLE IF NOT EXISTS food_items AS SELECT * FROM food_items")
 
     # Ajoute des exercices à la table `memory_state` pour ce type de jointure
-    data = {
-        "theme": ["cross_joins"],
-        "exercise_name": ["beverages_and_food"],
-        "tables": [["beverages", "food_items"]],
-        "last_reviewed": ["1980-01-01"],
-    }
-    memory_state_df = pd.DataFrame(data)
-    con.execute("CREATE TABLE IF NOT EXISTS memory_state AS SELECT * FROM memory_state_df")
+    con.execute(
+        """
+        INSERT INTO memory_state(theme, exercise_name, tables, last_reviewed)
+        VALUES ('cross_joins', 'beverages_and_food', '["beverages", "food_items"]', '1970-01-01' )
+    """
+    )
+
+    # ----------------------------------------------------------------------------------
+    # EXERCISE 02
+    # ----------------------------------------------------------------------------------
+    sizes = """
+    size
+    XS
+    M
+    L
+    XL
+    """
+    sizes = pd.read_csv(io.StringIO(sizes))
+    con.execute("CREATE TABLE IF NOT EXISTS sizes AS SELECT * FROM sizes")
+
+    trademarks = """
+    trademark
+    Nike
+    Asphalte
+    Abercrombie
+    Lewis
+    """
+    trademarks = pd.read_csv(io.StringIO(trademarks))
+    con.execute("CREATE TABLE IF NOT EXISTS trademarks AS SELECT * FROM trademarks")
+
+    con.execute(
+        """
+            INSERT INTO memory_state(theme, exercise_name, tables, last_reviewed)
+            VALUES ('cross_joins', 'sizes_and_trademarks', '["sizes", "trademarks"]', '1970-01-01' )
+        """
+    )
+
+    # ----------------------------------------------------------------------------------
+    # EXERCISE 03
+    # ----------------------------------------------------------------------------------
+    hours = """
+    hours
+    8
+    9
+    10
+    11
+    12
+    """
+    hours = pd.read_csv(io.StringIO(hours))
+    con.execute("CREATE TABLE IF NOT EXISTS hours AS SELECT * FROM hours")
+
+    quarters = """
+    quarter
+    00
+    15
+    30
+    45
+    """
+    quarters = pd.read_csv(io.StringIO(quarters))
+    con.execute("CREATE TABLE IF NOT EXISTS quarters AS SELECT * FROM quarters")
+
+    con.execute(
+        """
+        INSERT INTO memory_state (theme, exercise_name, tables, last_reviewed)
+        VALUES ('cross_joins', 'hours_and_quarters', '["hours", "quarters"]', '1970-01-01')
+    """
+    )

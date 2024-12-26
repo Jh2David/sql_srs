@@ -66,7 +66,7 @@ def init_inner_joins(con):
         """
         INSERT INTO memory_state (theme, exercise_name, tables, last_reviewed)
         VALUES (
-            'inner_joins',
+            '02_inner_joins',
              'ex01_orders_and_order_details', 
              '["df_orders", "df_order_details"]', 
              '1970-01-01'
@@ -82,7 +82,7 @@ def init_inner_joins(con):
         """
         INSERT INTO memory_state (theme, exercise_name, tables, last_reviewed)
         VALUES (
-            'inner_joins',
+            '02_inner_joins',
              'ex02_orders_and_clients', 
              '["df_customers", "detailed_order"]', 
              '1970-01-01'
@@ -98,7 +98,7 @@ def init_inner_joins(con):
         """
         INSERT INTO memory_state (theme, exercise_name, tables, last_reviewed)
         VALUES (
-            'inner_joins',
+            '02_inner_joins',
             'ex03_order_clients_and_products',
             '["order_client", "df_products"]',
             '1970-01-01'

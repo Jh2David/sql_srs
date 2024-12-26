@@ -29,7 +29,7 @@ def init_cross_joins(con):
     con.execute(
         """
         INSERT INTO memory_state(theme, exercise_name, tables, last_reviewed)
-        VALUES ('cross_joins', 'beverages_and_food', '["beverages", "food_items"]', '1970-01-01' )
+        VALUES ('01_cross_joins', 'beverages_and_food', '["beverages", "food_items"]', '1970-01-01' )
     """
     )
 
@@ -59,7 +59,7 @@ def init_cross_joins(con):
     con.execute(
         """
             INSERT INTO memory_state(theme, exercise_name, tables, last_reviewed)
-            VALUES ('cross_joins', 'sizes_and_trademarks', '["sizes", "trademarks"]', '1970-01-01' )
+            VALUES ('01_cross_joins', 'sizes_and_trademarks', '["sizes", "trademarks"]', '1970-01-01' )
         """
     )
 
@@ -90,6 +90,6 @@ def init_cross_joins(con):
     con.execute(
         """
         INSERT INTO memory_state (theme, exercise_name, tables, last_reviewed)
-        VALUES ('cross_joins', 'hours_and_quarters', '["hours", "quarters"]', '1970-01-01')
+        VALUES ('01_cross_joins', 'hours_and_quarters', '["hours", "quarters"]', '1970-01-01')
     """
     )

@@ -92,7 +92,7 @@ def get_exercise(
 with st.sidebar:
     exercise, answer, solution_df = get_exercise(con)
 
-st.header("enter your code:")
+st.header("Enter your code:")
 query = st.text_area(label="votre code SQL ici", key="user_input")
 
 

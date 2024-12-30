@@ -1,9 +1,9 @@
 import duckdb
 
 from functions.init_cross_joins import init_cross_joins
+from functions.init_full_outer_joins import init_full_outer_joins
 from functions.init_inner_joins import init_inner_joins
 from functions.init_left_joins import init_left_joins
-from functions.init_full_outer_joins import init_full_outer_joins
 from functions.init_self_joins import init_self_joins
 
 # DuckDB connection

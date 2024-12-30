@@ -56,9 +56,7 @@ def init_full_outer_joins(con):
         "product_price": [3, 800, 400, 30],
     }
     df_products = pd.DataFrame(products_data)
-    con.execute(
-        "CREATE TABLE IF NOT EXISTS df_products AS SELECT * FROM df_products"
-    )
+    con.execute("CREATE TABLE IF NOT EXISTS df_products AS SELECT * FROM df_products")
 
     # Table des stores:
     stores_data = {"store_id": [1, 2, 3, 4], "customer_id": [11, 12, 13, 15]}

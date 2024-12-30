@@ -57,7 +57,7 @@ def init_full_outer_joins(con):
     }
     df_products = pd.DataFrame(products_data)
     con.execute(
-        "CREATE TABLE IF NOT EXISTS products_data AS SELECT * FROM products_data"
+        "CREATE TABLE IF NOT EXISTS df_products AS SELECT * FROM df_products"
     )
 
     # Table des stores:

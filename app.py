@@ -82,7 +82,12 @@ def get_exercise(
     )
     st.write(exercise_df)
     exercise_name = exercise_df.loc[0, "exercise_name"]
-    with open(f"answers/{exercise_name}.sql", "r") as f:
+
+    if theme is None:
+        st.warning("Please select a theme to load the exercises.")
+        st.stop()
+
+    with open(f"answers/{theme}/{exercise_name}.sql", "r") as f:
         sql_answer = f.read()
     solution = con.execute(sql_answer).df()
 

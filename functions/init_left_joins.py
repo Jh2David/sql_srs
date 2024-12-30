@@ -1,7 +1,31 @@
 import pandas as pd
 
 
-def init_inner_joins(con):
+def init_left_joins(con):
+    """
+    Initializes the database schema and populates the tables required for exercises
+    involving left joins. The function creates several tables and inserts corresponding
+    exercises into the `memory_state` table.
+
+    Tables created:
+        - df_orders: Contains orders with their IDs and associated customer IDs.
+        - df_customers: Lists customers with their IDs and names.
+        - df_products: Stores product details (ID, name, price).
+        - df_order_details: Links orders to products with their quantities.
+        - detailed_order: Combines orders with their corresponding details (via a left join).
+        - order_client: Extends detailed_order with customer information (via a left join).
+
+    Exercises added to `memory_state`:
+        1. `ex01_orders_and_order_details`: Combines `df_orders` and `df_order_details`.
+        2. `ex02_orders_and_clients`: Extends detailed orders with customer details.
+        3. `ex03_order_clients_and_products`: Combines customer-detailed orders with products.
+
+    Args:
+        con: A DuckDB connection object used to execute SQL commands.
+
+    Returns:
+        None
+    """
     # Table des commandes:
     orders_data = {
         "order_id": [1, 2, 3, 4, 5],
@@ -49,13 +73,13 @@ def init_inner_joins(con):
     )
 
     # Ex01 - Commandes détaillées
-    detailed_order = pd.merge(df_orders, df_order_details, on="order_id", how="inner")
+    detailed_order = pd.merge(df_orders, df_order_details, on="order_id", how="left")
     con.execute(
         "CREATE TABLE IF NOT EXISTS detailed_order AS SELECT * FROM detailed_order"
     )
 
     # Ex02 - Commandes des clients détaillées
-    order_client = pd.merge(df_customers, detailed_order, on="customer_id", how="inner")
+    order_client = pd.merge(df_customers, detailed_order, on="customer_id", how="left")
     con.execute("CREATE TABLE IF NOT EXISTS order_client AS SELECT * FROM order_client")
 
     # ----------------------------------------------------------------------------------
@@ -66,7 +90,7 @@ def init_inner_joins(con):
         """
         INSERT INTO memory_state (theme, exercise_name, tables, last_reviewed)
         VALUES (
-            '02_inner_joins',
+            '03_left_joins',
              'ex01_orders_and_order_details', 
              '["df_orders", "df_order_details"]', 
              '1970-01-01'
@@ -82,7 +106,7 @@ def init_inner_joins(con):
         """
         INSERT INTO memory_state (theme, exercise_name, tables, last_reviewed)
         VALUES (
-            '02_inner_joins',
+            '03_left_joins',
              'ex02_orders_and_clients', 
              '["df_customers", "detailed_order"]', 
              '1970-01-01'
@@ -98,7 +122,7 @@ def init_inner_joins(con):
         """
         INSERT INTO memory_state (theme, exercise_name, tables, last_reviewed)
         VALUES (
-            '02_inner_joins',
+            '03_left_joins',
             'ex03_order_clients_and_products',
             '["order_client", "df_products"]',
             '1970-01-01'

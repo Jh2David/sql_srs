@@ -62,33 +62,61 @@ def get_exercise(
              If an error occurs, returns (None, None, None).
     """
 
-    available_themes_df = con.execute("SELECT DISTINCT theme FROM memory_state").df()
+    available_themes_df = con.execute(
+        "SELECT DISTINCT theme FROM memory_state ORDER BY theme"
+    ).df()
+
+    if "theme" not in st.session_state:
+        st.session_state.theme = None
+
     theme = st.selectbox(
         "What would you like to review?",
         available_themes_df["theme"].unique(),
-        index=None,
+        index=(
+            available_themes_df["theme"].unique().tolist().index(st.session_state.theme)
+            if st.session_state.theme
+            else 0
+        ),
         placeholder="Select a theme...",
     )
-    if theme:
-        st.write("You selected:", theme)
-        select_exercise_query = f"SELECT * FROM memory_state WHERE theme = '{theme}'"
-    else:
-        select_exercise_query = "SELECT * FROM memory_state"
+    # Mettre à jour le thème dans session_state uniquement si sélectionné
+    if theme != st.session_state.theme:
+        st.session_state.theme = theme
+        st.rerun()
+
+    # Vérifier si un thème est sélectionné
+    if theme is None:
+        st.warning("Please select a theme to load the exercises.")
+        return None, None, None
+
+    st.write("You selected:", theme)
+
+    select_exercise_query = f"SELECT * FROM memory_state WHERE theme = '{theme}'"
     exercise_df = (
         con.execute(select_exercise_query)
         .df()
         .sort_values("last_reviewed")
         .reset_index(drop=True)
     )
-    st.write(exercise_df)
+
+    # Assurez-vous que l'exercice existe
+    if exercise_df.empty:
+        st.warning("No exercises found for this theme.")
+        return None, None, None
+
+    st.dataframe(exercise_df)
+
+    # Choisir le premier exercice
     exercise_name = exercise_df.loc[0, "exercise_name"]
 
-    if theme is None:
-        st.warning("Please select a theme to load the exercises.")
-        st.stop()
+    # Charger le fichier SQL de l'exercice
+    try:
+        with open(f"answers/{theme}/{exercise_name}.sql", "r") as f:
+            sql_answer = f.read()
+    except FileNotFoundError:
+        st.error(f"Solution file for exercise '{exercise_name}' not found.")
+        return None, None, None
 
-    with open(f"answers/{theme}/{exercise_name}.sql", "r") as f:
-        sql_answer = f.read()
     solution = con.execute(sql_answer).df()
 
     return exercise_df, sql_answer, solution

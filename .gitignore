@@ -2,5 +2,6 @@
 venv/
 *.csv
 test_db.py
-data/
+data/exercises_sql_tables.duckdb
 functions/__pycache__
+.DS_Store

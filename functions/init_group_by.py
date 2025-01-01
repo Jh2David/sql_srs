@@ -1,11 +1,19 @@
 import pandas as pd
+import streamlit as st
 
 
 def init_group_by(con):
     """
+    Initializes the database for the "06_group_by" theme by creating a table and populating
+    it with data from a CSV file. It also sets up several exercises related to the theme.
 
-    :param con:
-    :return:
+    Steps performed:
+    1. Loads the `appartements_nord_pdc.csv` file into a Pandas DataFrame.
+    2. Creates the `appt_nord` table in the database if it doesn't already exist and populates it with the DataFrame data.
+    3. Inserts exercise definitions into the `memory_state` table for various GROUP BY-related exercises.
+
+    :param con: DuckDB connection object to execute SQL queries.
+    :return: None
     """
     appt_nord = pd.read_csv("data/06_group_by/appartements_nord_pdc.csv")
     con.execute("CREATE TABLE IF NOT EXISTS appt_nord AS SELECT * FROM appt_nord")

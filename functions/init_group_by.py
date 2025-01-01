@@ -1,12 +1,6 @@
 import pandas as pd
+import streamlit as st
 
-def load_data():
-    """
-    Load data from the CSV file and return it as a DataFrame.
-
-    :return: pd.DataFrame containing the data from the CSV file.
-    """
-    return pd.read_csv("data/06_group_by/appartements_nord_pdc.csv")
 
 def init_group_by(con):
     """
@@ -21,7 +15,7 @@ def init_group_by(con):
     :param con: DuckDB connection object to execute SQL queries.
     :return: None
     """
-    appt_nord = load_data()
+    appt_nord = pd.read_csv("data/06_group_by/appartements_nord_pdc.csv")
     con.execute("CREATE TABLE IF NOT EXISTS appt_nord AS SELECT * FROM appt_nord")
 
     # Nombre de ventes par commune

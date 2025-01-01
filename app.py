@@ -50,7 +50,9 @@ def check_users_solution(user_query: str) -> None:
 
 def get_exercise(
     con,
-) -> Tuple[Optional[pd.DataFrame], Optional[str], Optional[pd.DataFrame]]:
+) -> Tuple[
+    Optional[pd.DataFrame], Optional[str], Optional[pd.DataFrame], Optional[str]
+]:
     """
     Select a theme and return the corresponding exercise, its SQL solution, and its dataframe.
 
@@ -109,6 +111,24 @@ def get_exercise(
     # Choisir le premier exercice
     exercise_name = exercise_df.loc[0, "exercise_name"]
 
+    # Charger la question associée à l'exercice
+    sql_question = con.execute(
+        f"""
+           SELECT question
+           FROM exercise_questions
+           WHERE theme = '{theme}' AND exercise_name = '{exercise_name}'
+       """
+    ).fetchone()
+
+    # Vérifier si la question est trouvée
+    if sql_question is None:
+        st.warning(
+            f"No question found for exercise '{exercise_name}' in theme '{theme}'."
+        )
+        sql_question = "No question available for this exercise."
+    else:
+        sql_question = question[0]  # Extraire la question du résultat de la requête
+
     # Charger le fichier SQL de l'exercice
     try:
         with open(f"answers/{theme}/{exercise_name}.sql", "r") as f:
@@ -119,13 +139,16 @@ def get_exercise(
 
     solution = con.execute(sql_answer).df()
 
-    return exercise_df, sql_answer, solution
+    return exercise_df, sql_answer, solution, sql_question
 
 
 with st.sidebar:
-    exercise, answer, solution_df = get_exercise(con)
+    exercise, answer, solution_df, question = get_exercise(con)
 
-st.header("Enter your code:")
+# AFFICHAGE PAGE
+if question:
+    st.subheader(question)
+st.subheader("Entrer votre code:")
 query = st.text_area(label="votre code SQL ici", key="user_input")
 
 

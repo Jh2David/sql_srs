@@ -18,80 +18,67 @@ def init_group_by(con):
     appt_nord = pd.read_csv("data/06_group_by/appartements_nord_pdc.csv")
     con.execute("CREATE TABLE IF NOT EXISTS appt_nord AS SELECT * FROM appt_nord")
 
-    # Nombre de ventes par commune
+    # Table des questions
     con.execute(
         """
-        INSERT INTO memory_state (theme, exercise_name, tables, last_reviewed)
-        VALUES (
-            '06_group_by',
-             'ex01_group_by_appt_nord',
-             '["appt_nord"]',
-             '1970-01-01'
-             )
+            CREATE TABLE IF NOT EXISTS exercise_questions (
+                theme TEXT,
+                exercise_name TEXT,
+                question TEXT
+            )
         """
     )
 
-    # La moyenne des prix par commune
-    con.execute(
-        """
-        INSERT INTO memory_state (theme, exercise_name, tables, last_reviewed)
-        VALUES (
-            '06_group_by',
-             'ex02_group_by_appt_nord',
-             '["appt_nord"]',
-             '1970-01-01'
-             )
-        """
-    )
+    exercises_and_questions = [
+        {
+            "exercise_name": "ex01_group_by_appt_nord",
+            "question": "Combien de ventes ont été réalisées par commune ?",
+        },
+        {
+            "exercise_name": "ex02_group_by_appt_nord",
+            "question": "Quelle est la moyenne des prix par commune ?",
+        },
+        {
+            "exercise_name": "ex03_group_by_appt_nord",
+            "question": "Quelle est la moyenne des prix par commune et le nombre de logements associé (nb_lines) ?",
+        },
+        {
+            "exercise_name": "ex04_where_and_subquery_appt_nord",
+            "question": "Appliquez une clause WHERE et une subquery pour sélectionner les communes proposant plus de 10 logements (nb_lines>10) .",
+        },
+        {
+            "exercise_name": "ex05_where_and_CTE_appt_nord",
+            "question": "Utilisez une CTE pour sélectionner les communes proposant plus de 10 logements (nb_lines>10)",
+        },
+        {
+            "exercise_name": "ex06_where_and_having_appt_nord",
+            "question": "Utiliser une clause HAVING pour filtrer les communes proposant plus de 10 logements (nb_lines>10)",
+        },
+    ]
 
-    # Moyenne et count du nombre de lignes
-    con.execute(
-        """
-        INSERT INTO memory_state (theme, exercise_name, tables, last_reviewed)
-        VALUES (
-            '06_group_by',
-             'ex03_group_by_appt_nord',
-             '["appt_nord"]',
-             '1970-01-01'
-             )
-        """
-    )
+    # Insérer les exercices et les questions
+    for exercise in exercises_and_questions:
+        exercise_name = exercise["exercise_name"]
+        question = exercise["question"]
 
-    # Where et subquery
-    con.execute(
-        """
-        INSERT INTO memory_state (theme, exercise_name, tables, last_reviewed)
-        VALUES (
-            '06_group_by',
-             'ex04_where_and_subquery_appt_nord',
-             '["appt_nord"]',
-             '1970-01-01'
-             )
-        """
-    )
+        # QUESTIONS
+        con.execute(
+            """
+                    INSERT INTO exercise_questions (theme, exercise_name, question)
+                    VALUES (?, ?, ?)
+                """,
+            ("06_group_by", exercise_name, question),
+        )
 
-    # Where et CTE
-    con.execute(
-        """
-        INSERT INTO memory_state (theme, exercise_name, tables, last_reviewed)
-        VALUES (
-            '06_group_by',
-             'ex05_where_and_CTE_appt_nord',
-             '["appt_nord"]',
-             '1970-01-01'
-             )
-        """
-    )
-
-    # Where et having
-    con.execute(
-        """
-        INSERT INTO memory_state (theme, exercise_name, tables, last_reviewed)
-        VALUES (
-            '06_group_by',
-             'ex06_where_and_having_appt_nord',
-             '["appt_nord"]',
-             '1970-01-01'
-             )
-        """
-    )
+        # EXERCICES
+        con.execute(
+            f"""
+            INSERT INTO memory_state (theme, exercise_name, tables, last_reviewed)
+            VALUES (
+                '06_group_by',
+                 '{exercise_name}',
+                 '["appt_nord"]',
+                 '1970-01-01'
+                 )
+            """
+        )

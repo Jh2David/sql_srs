@@ -157,7 +157,8 @@ if query:
     check_users_solution(query)
 
 # Ajouter du style CSS pour centrer le texte des boutons et uniformiser leur taille
-st.markdown("""
+st.markdown(
+    """
 <style>
 div.stButton {
     width: 100%; /* Pour que le bouton prenne toute la largeur */
@@ -165,13 +166,16 @@ div.stButton {
     height: 50px; /* Définir une hauteur fixe pour tous les boutons */
 }
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
+
 
 # Fonction pour créer un bouton et gérer la mise à jour
-def create_button(col, n_days):
+def create_button(col, nb_days):
     with col:
-        if st.button(f"Revoir dans {n_days} jours", use_container_width=True):
-            next_review = date.today() + timedelta(days=n_days)
+        if st.button(f"Revoir dans {nb_days} jours", use_container_width=True):
+            next_review = date.today() + timedelta(days=nb_days)
             con.execute(
                 f"""
                 UPDATE memory_state SET last_reviewed = '{next_review}' 
@@ -179,6 +183,7 @@ def create_button(col, n_days):
                 """
             )
             st.rerun()
+
 
 # Créer 4 colonnes
 col1, col2, col3, col4 = st.columns(4)

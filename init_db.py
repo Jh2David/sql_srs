@@ -13,7 +13,8 @@ con = duckdb.connect(database="data/exercises_sql_tables.duckdb", read_only=Fals
 # Création de la table `exercise_questions` si elle n'existe pas déjà
 con.execute(
     """
-    CREATE TABLE IF NOT EXISTS exercise_questions (
+    DROP TABLE IF EXISTS exercise_questions;
+    CREATE TABLE exercise_questions (
     theme TEXT,
     exercise_name TEXT,
     question TEXT,

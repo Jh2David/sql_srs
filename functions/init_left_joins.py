@@ -86,7 +86,7 @@ def init_left_joins(con):
 
 
     # ----------------------------------------------------------------------------------
-    # Table des questions pour chaque exercice
+    # Table + questions pour chaque exercice
     # ----------------------------------------------------------------------------------
     exercises = [
         {
@@ -130,6 +130,7 @@ def init_left_joins(con):
             """
             INSERT INTO exercise_questions (theme, exercise_name, question)
             VALUES (?, ?, ?)
+            ON CONFLICT (theme, exercise_name) DO NOTHING;
             """,
             ("03_left_joins", exercise_name, question),
         )

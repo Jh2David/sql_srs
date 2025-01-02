@@ -156,21 +156,45 @@ query = st.text_area(label="votre code SQL ici", key="user_input")
 if query:
     check_users_solution(query)
 
-for n_days in [2, 7, 21]:
-    if st.button(f"Revoir dans {n_days} jours"):
-        next_review = date.today() + timedelta(days=n_days)
-        con.execute(
-            f"""
-            UPDATE memory_state SET last_reviewed = '{next_review}' 
-            WHERE exercise_name = '{exercise.loc[0, 'exercise_name']}'
-            """
-        )
+# Ajouter du style CSS pour centrer le texte des boutons et uniformiser leur taille
+st.markdown("""
+<style>
+div.stButton {
+    width: 100%; /* Pour que le bouton prenne toute la largeur */
+    text-align: center; /* Centrer le texte */
+    height: 50px; /* Définir une hauteur fixe pour tous les boutons */
+}
+</style>
+""", unsafe_allow_html=True)
+
+# Fonction pour créer un bouton et gérer la mise à jour
+def create_button(col, n_days):
+    with col:
+        if st.button(f"Revoir dans {n_days} jours", use_container_width=True):
+            next_review = date.today() + timedelta(days=n_days)
+            con.execute(
+                f"""
+                UPDATE memory_state SET last_reviewed = '{next_review}' 
+                WHERE exercise_name = '{exercise.loc[0, 'exercise_name']}'
+                """
+            )
+            st.rerun()
+
+# Créer 4 colonnes
+col1, col2, col3, col4 = st.columns(4)
+
+# Liste des jours pour les boutons
+days_options = [2, 7, 21]
+
+# Créer les boutons pour les options de révision
+for i, n_days in enumerate(days_options):
+    create_button([col1, col2, col3][i], n_days)
+
+# Bouton Reset dans la dernière colonne
+with col4:
+    if st.button("Reset", use_container_width=True):
+        con.execute(f"UPDATE memory_state SET last_reviewed = '1970-01-01'")
         st.rerun()
-
-if st.button("Reset"):
-    con.execute(f"UPDATE memory_state SET last_reviewed = '1970-01-01'")
-    st.rerun()
-
 tab2, tab3 = st.tabs(["Tables", "Solution"])
 
 with tab2:

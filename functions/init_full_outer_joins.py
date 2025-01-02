@@ -92,3 +92,15 @@ def init_full_outer_joins(con):
              )
         """
     )
+
+ # Insérer la question pour l'exercice
+    con.execute(
+        """
+        INSERT INTO exercise_questions (theme, exercise_name, question)
+        VALUES (
+            '04_full_outer_joins',
+            'ex01_stores_and_products_and_df_products',
+            'Effectuez un FULL OUTER JOIN entre les stores et les produits pour obtenir le détail des produits disponibles.'
+        )
+        """
+    )

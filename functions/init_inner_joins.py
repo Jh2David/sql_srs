@@ -13,17 +13,6 @@ def init_inner_joins(con):
     :return: None
     """
 
-    # Création des tables nécessaires
-    con.execute(
-        """
-        CREATE TABLE IF NOT EXISTS exercise_questions (
-            theme TEXT,
-            exercise_name TEXT,
-            question TEXT
-        )
-        """
-    )
-
     # Table des commandes:
     orders_data = {
         "order_id": [1, 2, 3, 4, 5],

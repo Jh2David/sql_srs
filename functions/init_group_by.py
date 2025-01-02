@@ -18,16 +18,6 @@ def init_group_by(con):
     con.execute("CREATE TABLE IF NOT EXISTS appt_nord AS SELECT * FROM appt_nord")
 
     # Table des questions
-    con.execute(
-        """
-            CREATE TABLE IF NOT EXISTS exercise_questions (
-                theme TEXT,
-                exercise_name TEXT,
-                question TEXT
-            )
-        """
-    )
-
     exercises_and_questions = [
         {
             "exercise_name": "ex01_group_by_appt_nord",

@@ -15,15 +15,6 @@ def init_cross_joins(con):
     """
 
     # Table des questions
-    con.execute(
-        """
-            CREATE TABLE IF NOT EXISTS exercise_questions (
-                theme TEXT,
-                exercise_name TEXT,
-                question TEXT
-            )
-        """
-    )
     exercises_and_questions = [
         {
             "exercise_name": "beverages_and_food",

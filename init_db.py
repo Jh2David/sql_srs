@@ -10,6 +10,18 @@ from functions.init_self_joins import init_self_joins
 # DuckDB connection
 con = duckdb.connect(database="data/exercises_sql_tables.duckdb", read_only=False)
 
+# Création de la table `exercise_questions` si elle n'existe pas déjà
+con.execute(
+    """
+    CREATE TABLE IF NOT EXISTS exercise_questions (
+    theme TEXT,
+    exercise_name TEXT,
+    question TEXT,
+    PRIMARY KEY (theme, exercise_name)  -- Clé primaire composite
+    )
+    """
+)
+
 # memory_state table
 con.execute(
     """
@@ -20,7 +32,7 @@ con.execute(
         tables JSON,
         last_reviewed DATE
     )
-"""
+    """
 )
 
 # Exercise initialisation

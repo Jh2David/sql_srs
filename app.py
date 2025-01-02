@@ -127,7 +127,7 @@ def get_exercise(
         )
         sql_question = "No question available for this exercise."
     else:
-        sql_question = question[0]  # Extraire la question du résultat de la requête
+        sql_question = sql_question[0]  # Extraire la question du résultat de la requête
 
     # Charger le fichier SQL de l'exercice
     try:
@@ -142,15 +142,16 @@ def get_exercise(
     return exercise_df, sql_answer, solution, sql_question
 
 
+# -------------------------------------------------------------------------------
+# AFFICHAGE PAGE
+# -------------------------------------------------------------------------------
 with st.sidebar:
     exercise, answer, solution_df, question = get_exercise(con)
 
-# AFFICHAGE PAGE
 if question:
     st.subheader(question)
-st.subheader("Entrer votre code:")
-query = st.text_area(label="votre code SQL ici", key="user_input")
 
+query = st.text_area(label="votre code SQL ici", key="user_input")
 
 if query:
     check_users_solution(query)

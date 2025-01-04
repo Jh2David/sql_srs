@@ -7,6 +7,7 @@ WITH meetings_benjamin AS (
     USING (meeting_id)
     WHERE ldf.person_name == 'Benjamin'
     AND rdf.person_name != 'Benjamin'
+    ORDER BY colleague
 )
 
 SELECT colleague,

@@ -79,6 +79,10 @@ def init_case_when(con):
     df = pd.DataFrame(data)
     con.execute("CREATE TABLE IF NOT EXISTS df AS SELECT * FROM df")
 
+    # Foot Table
+    data = pd.read_csv("data/07_case_when/season-1011_csv.csv")
+    con.execute("CREATE TABLE IF NOT EXISTS data AS SELECT * FROM data")
+
     exercises_and_questions = [
         {
             "exercise_name": "ex01A_case_when_wages",
@@ -118,11 +122,42 @@ def init_case_when(con):
             "exercise_name": "ex01C_case_when_wages",
             "tables": ["wages"],
             "question": "Classer les revenus par catégories trié par l'average_salary \n"
-            "Refaites l/'exercice 01B en utilisant une CTE qui crée la colonne 'salary_range' avec un CASE"
+            "Refaites l'exercice 01B en utilisant une CTE qui crée la colonne 'salary_range' avec un CASE"
             "WHEN. Puis en faisant la moyenne des salaires par salary_range\n"
             "- Low si < 50 000\n"
             "- medium si < 90 000\n"
             "- sinon: high",
+        },
+        {
+            "exercise_name": "ex03A_case_when_football",
+            "tables": ["data"],
+            "question": "Combien de Match Lille a gagné?\n"
+            "- A domicile\n"
+            "- A l'extérieur\n\n"
+            "Pour déterminer que Lille a gagné à domicile, il faut que:\n"
+            "- La HomeTeam soit Lille\n"
+            "- FTHG (pour Full Time Home Goal) soit supérieur à FTAG (Full Time Away Goal: nombre de goal "
+            "scorés par la 'AwayTeam')\n"
+            "- Pour faciliter l'exercice, on ne prend pas le cas de figure où il y a match nul à la 90' "
+            "minute et qu'un but est inscrit pendant le temps additionnel\n\n"
+            "Exercice:\n"
+            "- Utilisez un CASE WHEN pour recenser les cas de figure où lille gagne à domicile"
+            "(en utilisant la règle ci-dessus)\n"
+            "- Englobez ce CASE WHEN dans un count pour compter le total de victoire à domicile\n"
+            "- Faites la même chose avec les matchs à l'extérieur\n\n"
+            "Hint: pour faire le count, il faut grouper sur quelque chose. "
+            "Utilisez 'Div': on veut les matchs gagnés en L1.",
+        },
+        {
+            "exercise_name": "ex03B_case_when_football",
+            "tables": ["data"],
+            "question": "On a gagné 13 matchs sur combien?\n"
+            "Comment faire pour ne pas prendre en compte tous ces matchs qui ne concernent pas Lille?\n\n"
+            "Attention :\n"
+            "L'utilisation du ELSE pourrai-être une solution, cependant il faut bien choisir "
+            "où mettre des 0. "
+            "Comment pourrait-on procéder pour n'avoir de 0 que quand le match concerne "
+            "Lille (et que Lille a perdu)?",
         },
     ]
 

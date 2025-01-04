@@ -1,7 +1,18 @@
+import json
+
 import pandas as pd
 
 
 def init_inner_joins(con):
+    """
+    Initializes the database for the "02_inner_joins" theme by creating tables and
+    populating them with data. It also sets up several exercises and their questions
+    related to inner joins.
+
+    :param con: DuckDB connection object to execute SQL queries.
+    :return: None
+    """
+
     # Table des commandes:
     orders_data = {
         "order_id": [1, 2, 3, 4, 5],
@@ -58,50 +69,45 @@ def init_inner_joins(con):
     order_client = pd.merge(df_customers, detailed_order, on="customer_id", how="inner")
     con.execute("CREATE TABLE IF NOT EXISTS order_client AS SELECT * FROM order_client")
 
-    # ----------------------------------------------------------------------------------
-    # EXERCICE 01
-    # ----------------------------------------------------------------------------------
-    # inner join pour rassembler les commandes avec les détails
-    con.execute(
-        """
-        INSERT INTO memory_state (theme, exercise_name, tables, last_reviewed)
-        VALUES (
-            '02_inner_joins',
-             'ex01_orders_and_order_details', 
-             '["df_orders", "df_order_details"]', 
-             '1970-01-01'
-             )
-    """
-    )
+    # Définir les exercices, questions et tables associées
+    exercises = [
+        {
+            "exercise_name": "ex01_orders_and_order_details",
+            "tables": ["df_orders", "df_order_details"],
+            "question": "Effectuez un INNER JOIN entre les commandes et leurs détails.",
+        },
+        {
+            "exercise_name": "ex02_orders_and_clients",
+            "tables": ["df_customers", "detailed_order"],
+            "question": "Réalisez un INNER JOIN entre les clients et les commandes détaillées.",
+        },
+        {
+            "exercise_name": "ex03_order_clients_and_products",
+            "tables": ["order_client", "df_products"],
+            "question": "Effectuez un INNER JOIN entre les clients des commandes détaillées et les produits.",
+        },
+    ]
 
-    # ----------------------------------------------------------------------------------
-    # EXERCISE 02
-    # ----------------------------------------------------------------------------------
-    # inner join pour rassembler les commandes détaillées avec les clients
-    con.execute(
-        """
-        INSERT INTO memory_state (theme, exercise_name, tables, last_reviewed)
-        VALUES (
-            '02_inner_joins',
-             'ex02_orders_and_clients', 
-             '["df_customers", "detailed_order"]', 
-             '1970-01-01'
-             )
-    """
-    )
+    # Insérer les exercices dans `memory_state` et les questions dans `exercise_questions`
+    for exercise in exercises:
+        exercise_name = exercise["exercise_name"]
+        tables = json.dumps(exercise["tables"])  # Convertir en JSON
+        question = exercise["question"]
 
-    # ----------------------------------------------------------------------------------
-    # EXERCISE 03
-    # ----------------------------------------------------------------------------------
-    # inner join pour rassembler les commandes client détaillées avec les produits
-    con.execute(
-        """
-        INSERT INTO memory_state (theme, exercise_name, tables, last_reviewed)
-        VALUES (
-            '02_inner_joins',
-            'ex03_order_clients_and_products',
-            '["order_client", "df_products"]',
-            '1970-01-01'
-             )
-    """
-    )
+        # Ajouter dans `memory_state`
+        con.execute(
+            """
+            INSERT INTO memory_state (theme, exercise_name, tables, last_reviewed)
+            VALUES (?, ?, ?, ?)
+            """,
+            ("02_inner_joins", exercise_name, tables, "1970-01-01"),
+        )
+
+        # Ajouter dans `exercise_questions`
+        con.execute(
+            """
+            INSERT INTO exercise_questions (theme, exercise_name, question)
+            VALUES (?, ?, ?)
+            """,
+            ("02_inner_joins", exercise_name, question),
+        )

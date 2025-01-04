@@ -1,9 +1,19 @@
 import io
+import json
 
 import pandas as pd
 
 
 def init_cross_joins(con):
+    """
+    Initializes the database for the "01_cross_joins" theme by creating tables and
+    populating them with data. It also sets up several exercises and their questions
+    related to cross joins.
+
+    :param con: DuckDB connection object to execute SQL queries.
+    :return: None
+    """
+
     # ----------------------------------------------------------------------------------
     # EXERCICE 01
     # ----------------------------------------------------------------------------------
@@ -93,3 +103,53 @@ def init_cross_joins(con):
         VALUES ('01_cross_joins', 'hours_and_quarters', '["hours", "quarters"]', '1970-01-01')
     """
     )
+
+    # ----------------------------------------------------------------------------------
+    # Table + questions pour chaque exercice
+    # ----------------------------------------------------------------------------------
+    exercises = [
+        {
+            "exercise_name": "beverages_and_food",
+            "tables": ["beverages", "food_items"],
+            "question": "Créez une table contenant toutes les combinaisons possibles de boissons et d'aliments, avec leurs prix respectifs.",
+        },
+        {
+            "exercise_name": "sizes_and_trademarks",
+            "tables": ["sizes", "trademarks"],
+            "question": "Créez une table contenant toutes les combinaisons possibles de tailles et de marques.",
+        },
+        {
+            "exercise_name": "hours_and_quarters",
+            "tables": ["hours", "quarters"],
+            "question": "Créez une table représentant toutes les combinaisons possibles d'heures et de quarts d'heure.",
+        },
+    ]
+
+    # Insérer les exercices et les questions dans les tables `memory_state` et `exercise_questions`
+    for exercise in exercises:
+        exercise_name = exercise["exercise_name"]
+        tables = json.dumps(exercise["tables"])  # Convertir en JSON
+        question = exercise["question"]
+
+        # Ajouter dans `memory_state`
+        con.execute(
+            f"""
+                 INSERT INTO memory_state (theme, exercise_name, tables, last_reviewed)
+                 VALUES (
+                     '01_cross_joins',
+                     '{exercise_name}',
+                     '{tables}',
+                     '1970-01-01'
+                 )
+               """
+        )
+
+        # Ajouter dans `exercise_questions`
+        con.execute(
+            """
+            INSERT INTO exercise_questions (theme, exercise_name, question)
+            VALUES (?, ?, ?)
+            ON CONFLICT (theme, exercise_name) DO NOTHING;
+            """,
+            ("01_cross_joins", exercise_name, question),
+        )

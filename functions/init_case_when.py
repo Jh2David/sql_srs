@@ -5,9 +5,19 @@ import pandas as pd
 
 def init_case_when(con):
     """
+    Initializes the database for the "07_case_when" theme by creating tables and
+    populating them with data. It also sets up several exercises and their questions
+    related to the usage of the CASE WHEN statement in SQL queries.
 
-    :param con:
-    :return:
+    This function performs the following tasks:
+    1. Creates tables for wage data, product sales data, and football match data.
+    2. Inserts various exercises and their associated questions into the `exercise_questions`
+       and `memory_state` tables to be used for practicing SQL queries with CASE WHEN logic.
+    3. The exercises cover topics such as salary adjustments, calculating total revenue with discounts,
+       and analyzing football match results using conditional statements.
+
+    :param con: DuckDB connection object to execute SQL queries.
+    :return: None
     """
 
     # Wages table

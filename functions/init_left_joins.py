@@ -84,7 +84,6 @@ def init_left_joins(con):
     order_client = pd.merge(df_customers, detailed_order, on="customer_id", how="left")
     con.execute("CREATE TABLE IF NOT EXISTS order_client AS SELECT * FROM order_client")
 
-
     # ----------------------------------------------------------------------------------
     # Table + questions pour chaque exercice
     # ----------------------------------------------------------------------------------

@@ -1,6 +1,7 @@
-import pandas as pd
 import json
 import random
+
+import pandas as pd
 
 
 def init_group_by(con):
@@ -22,13 +23,24 @@ def init_group_by(con):
 
     # FIND THE BEST CLIENTS
     # Other dataframe for exercices 7A to 7D. Clients table
-    clients = ["Oussama", "Julie", "Chris", "Tom", "Jean-Nicolas", "Aline", "Ben", "Toufik", "Sylvie", "David"]
+    clients = [
+        "Oussama",
+        "Julie",
+        "Chris",
+        "Tom",
+        "Jean-Nicolas",
+        "Aline",
+        "Ben",
+        "Toufik",
+        "Sylvie",
+        "David",
+    ]
     df_ventes = [110, 49, 65, 23, 24, 3.99, 29, 48.77, 44, 10, 60, 12, 62, 19, 75] * 2
 
     df_ventes = pd.DataFrame(df_ventes)
     df_ventes.columns = ["montant"]
     df_ventes["client"] = clients * 3
-    con.execute('CREATE TABLE IF NOT EXISTS df_ventes AS SELECT * FROM df_ventes')
+    con.execute("CREATE TABLE IF NOT EXISTS df_ventes AS SELECT * FROM df_ventes")
 
     # Other dataframe for exercices 8A to 8B. Clients table
     person_names = ["Benjamin", "Florian", "Tarik", "Bob", "Sirine", "Alice"]
@@ -49,18 +61,24 @@ def init_group_by(con):
         duration = random.randint(10, 45)  # You can adjust the range as needed
         meeting_durations.append((meeting_id, duration))
 
-    durations_df = pd.DataFrame(meeting_durations, columns=["meeting_id", "duration_minutes"])
+    durations_df = pd.DataFrame(
+        meeting_durations, columns=["meeting_id", "duration_minutes"]
+    )
 
     # Data Tweak
     average_duration = durations_df["duration_minutes"].mean()
-    meetings_with_flo = meetings_df[meetings_df["person_name"] == "Florian"]["meeting_id"].unique()
+    meetings_with_flo = meetings_df[meetings_df["person_name"] == "Florian"][
+        "meeting_id"
+    ].unique()
     for _, row in durations_df.iterrows():
         if row["meeting_id"] in meetings_with_flo:
-            row["duration_minutes"] += random.randint(50, 65)  # Add extra minutes to meet the condition
+            row["duration_minutes"] += random.randint(
+                50, 65
+            )  # Add extra minutes to meet the condition
 
     # Total
     merged_df = meetings_df.merge(durations_df, on="meeting_id")
-    con.execute('CREATE TABLE IF NOT EXISTS merged_df AS SELECT * FROM merged_df')
+    con.execute("CREATE TABLE IF NOT EXISTS merged_df AS SELECT * FROM merged_df")
 
     # Table des questions
     exercises_and_questions = [
@@ -113,29 +131,29 @@ def init_group_by(con):
             "exercise_name": "ex07D_find_the_best_customers_df_ventes",
             "tables": ["df_ventes"],
             "question": "Quelle est la moyenne de la somme des ventes ? \n"
-                        "Utilisez une CTE pour obtenir les clients qui ont un total d'achat supérieur à la moyenne des totaux d'achats des autres clients \n"
-                        "Etapes: \n"
-                            "- Faire une query pour obtenir les ventes totales par client \n"
-                            "- La stocker dans une subquery \n"
-                            "- A partir de cette subquery, faire un query pour obtenir la moyenne de ces ventes totales \n"
-                            "- La stocker dans une 2nde subquery \n"
-                            "- A partir de cette deuxième subquery, récupérer les clients et leur somme totales dépensées, et filtrer sur les clients dont la moyenne est supérieure à celle calculée dans la 2e subquery",
+            "Utilisez une CTE pour obtenir les clients qui ont un total d'achat supérieur à la moyenne des totaux d'achats des autres clients \n"
+            "Etapes: \n"
+            "- Faire une query pour obtenir les ventes totales par client \n"
+            "- La stocker dans une subquery \n"
+            "- A partir de cette subquery, faire un query pour obtenir la moyenne de ces ventes totales \n"
+            "- La stocker dans une 2nde subquery \n"
+            "- A partir de cette deuxième subquery, récupérer les clients et leur somme totales dépensées, et filtrer sur les clients dont la moyenne est supérieure à celle calculée dans la 2e subquery",
         },
         {
             "exercise_name": "ex08A_meetings_merged_df",
             "tables": ["merged_df"],
             "question": "Faites le SELF JOIN \n"
-                        "- Créer une table avec toutes les combinaisons de personnes ayant assisté au même meeting \n"
-                        "- Ne garder que les records qui me concernent (Benjamin) \n"
-                        "- Enlever les records où je suis en réunion 'avec moi-même'",
+            "- Créer une table avec toutes les combinaisons de personnes ayant assisté au même meeting \n"
+            "- Ne garder que les records qui me concernent (Benjamin) \n"
+            "- Enlever les records où je suis en réunion 'avec moi-même'",
         },
         {
             "exercise_name": "ex08B_meetings_merged_df",
             "tables": ["merged_df"],
             "question": "Quels sont les collègues vous incitant à faire de longues réunions ?\n"
-                        "- Calculez la durée moyenne des meetings avec chaque collègue \n"
-                        "- Faire un group by pour savoir la durée moyenne de mes meetings avec chaque personne \n"
-                        "- Ne garder que les résultats pour lesquels la moyenne est > à 1h",
+            "- Calculez la durée moyenne des meetings avec chaque collègue \n"
+            "- Faire un group by pour savoir la durée moyenne de mes meetings avec chaque personne \n"
+            "- Ne garder que les résultats pour lesquels la moyenne est > à 1h",
         },
     ]
 

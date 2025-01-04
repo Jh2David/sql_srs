@@ -1,3 +1,5 @@
+import json
+
 import pandas as pd
 
 
@@ -83,49 +85,51 @@ def init_left_joins(con):
     con.execute("CREATE TABLE IF NOT EXISTS order_client AS SELECT * FROM order_client")
 
     # ----------------------------------------------------------------------------------
-    # EXERCICE 01
+    # Table + questions pour chaque exercice
     # ----------------------------------------------------------------------------------
-    # inner join pour rassembler les commandes avec les détails
-    con.execute(
-        """
-        INSERT INTO memory_state (theme, exercise_name, tables, last_reviewed)
-        VALUES (
-            '03_left_joins',
-             'ex01_orders_and_order_details', 
-             '["df_orders", "df_order_details"]', 
-             '1970-01-01'
-             )
-    """
-    )
+    exercises = [
+        {
+            "exercise_name": "ex01_orders_and_order_details",
+            "tables": ["df_orders", "df_order_details"],
+            "question": "Effectuez un LEFT JOIN entre les commandes et leurs détails.",
+        },
+        {
+            "exercise_name": "ex02_orders_and_clients",
+            "tables": ["df_customers", "detailed_order"],
+            "question": "Réalisez un LEFT JOIN entre les clients et les commandes détaillées.",
+        },
+        {
+            "exercise_name": "ex03_order_clients_and_products",
+            "tables": ["order_client", "df_products"],
+            "question": "Effectuez un LEFT JOIN entre les clients des commandes détaillées et les produits.",
+        },
+    ]
 
-    # ----------------------------------------------------------------------------------
-    # EXERCISE 02
-    # ----------------------------------------------------------------------------------
-    # inner join pour rassembler les commandes détaillées avec les clients
-    con.execute(
-        """
-        INSERT INTO memory_state (theme, exercise_name, tables, last_reviewed)
-        VALUES (
-            '03_left_joins',
-             'ex02_orders_and_clients', 
-             '["df_customers", "detailed_order"]', 
-             '1970-01-01'
-             )
-    """
-    )
+    # Insérer les exercices dans `memory_state` et les questions dans `exercise_questions`
+    for exercise in exercises:
+        exercise_name = exercise["exercise_name"]
+        tables = json.dumps(exercise["tables"])  # Convertir en JSON
+        question = exercise["question"]
 
-    # ----------------------------------------------------------------------------------
-    # EXERCISE 03
-    # ----------------------------------------------------------------------------------
-    # inner join pour rassembler les commandes client détaillées avec les produits
-    con.execute(
-        """
-        INSERT INTO memory_state (theme, exercise_name, tables, last_reviewed)
-        VALUES (
-            '03_left_joins',
-            'ex03_order_clients_and_products',
-            '["order_client", "df_products"]',
-            '1970-01-01'
-             )
-    """
-    )
+        # Ajouter dans `memory_state`
+        con.execute(
+            f"""
+              INSERT INTO memory_state (theme, exercise_name, tables, last_reviewed)
+              VALUES (
+                  '03_left_joins',
+                  '{exercise_name}',
+                  '{tables}',
+                  '1970-01-01'
+                  )
+              """
+        )
+
+        # Ajouter dans `exercise_questions`
+        con.execute(
+            """
+            INSERT INTO exercise_questions (theme, exercise_name, question)
+            VALUES (?, ?, ?)
+            ON CONFLICT (theme, exercise_name) DO NOTHING;
+            """,
+            ("03_left_joins", exercise_name, question),
+        )

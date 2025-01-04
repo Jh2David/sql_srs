@@ -10,18 +10,6 @@ def init_self_joins(con):
     involving self-joins. This function creates a table simulating sales data and
     prepares an exercise where self-joins are used to identify specific patterns.
 
-    Tables created:
-        - df_sales: Contains sales data with columns for order ID, customer ID,
-          and the day on which the order was placed.
-
-    Exercise added to `memory_state`:
-        - `ex01_df_sales`: The goal is to identify customers who made purchases on
-          two consecutive days using a self-join. The steps for this exercise include:
-          1. Performing a self-join on `df_sales` to find all combinations of orders
-             for the same customer.
-          2. Excluding rows where the same order appears twice.
-          3. Filtering rows where the difference between the two dates is exactly 1.
-
     Args:
         con: A DuckDB connection object used to execute SQL commands.
 
@@ -55,5 +43,18 @@ def init_self_joins(con):
              '["df_sales"]',
              '1970-01-01'
              )
+        """
+    )
+
+    # Insérer la question pour l'exercice dans `exercise_questions`
+    con.execute(
+        """
+        INSERT INTO exercise_questions (theme, exercise_name, question)
+        VALUES (
+            '05_self_joins',
+            'ex01_df_sales',
+            'Identifiez les clients ayant effectué des achats sur deux jours consécutifs en utilisant un self-join.'
+        )
+        ON CONFLICT (theme, exercise_name) DO NOTHING;
         """
     )

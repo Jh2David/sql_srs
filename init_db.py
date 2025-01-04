@@ -1,5 +1,6 @@
 import duckdb
 
+from functions.init_case_when import init_case_when
 from functions.init_cross_joins import init_cross_joins
 from functions.init_full_outer_joins import init_full_outer_joins
 from functions.init_group_by import init_group_by
@@ -43,5 +44,6 @@ init_left_joins(con)
 init_full_outer_joins(con)
 init_self_joins(con)
 init_group_by(con)
+init_case_when(con)
 
 con.close()

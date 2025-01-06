@@ -90,8 +90,9 @@ def init_case_when(con):
     con.execute("CREATE TABLE IF NOT EXISTS df AS SELECT * FROM df")
 
     # Foot Table
-    data = pd.read_csv("data/07_case_when/season-1011_csv.csv")
-    con.execute("CREATE TABLE IF NOT EXISTS data AS SELECT * FROM data")
+
+    df_foot = pd.read_csv("data/07_case_when/season_1011.csv")
+    con.execute("CREATE TABLE IF NOT EXISTS df_foot AS SELECT * FROM df_foot")
 
     exercises_and_questions = [
         {
@@ -140,7 +141,7 @@ def init_case_when(con):
         },
         {
             "exercise_name": "ex03A_case_when_football",
-            "tables": ["data"],
+            "tables": ["df_foot"],
             "question": "Combien de Match Lille a gagné?\n"
             "- A domicile\n"
             "- A l'extérieur\n\n"
@@ -160,7 +161,7 @@ def init_case_when(con):
         },
         {
             "exercise_name": "ex03B_case_when_football",
-            "tables": ["data"],
+            "tables": ["df_foot"],
             "question": "On a gagné 13 matchs sur combien?\n"
             "Comment faire pour ne pas prendre en compte tous ces matchs qui ne concernent pas Lille?\n\n"
             "Attention :\n"

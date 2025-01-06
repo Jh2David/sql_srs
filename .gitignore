@@ -1,6 +1,5 @@
 .idea/ 
 venv/
-*.csv
 test_db.py
 data/exercises_sql_tables.duckdb
 functions/__pycache__

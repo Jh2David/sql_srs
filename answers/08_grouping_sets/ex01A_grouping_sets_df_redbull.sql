@@ -1,4 +1,5 @@
-SELECT store_id,
+SELECT
+    store_id,
     product_name,
     SUM(amount)
 FROM df_stores_north

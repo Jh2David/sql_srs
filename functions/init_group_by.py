@@ -131,13 +131,15 @@ def init_group_by(con):
             "exercise_name": "ex07D_find_the_best_customers_df_ventes",
             "tables": ["df_ventes"],
             "question": "Quelle est la moyenne de la somme des ventes ? \n"
-            "Utilisez une CTE pour obtenir les clients qui ont un total d'achat supérieur à la moyenne des totaux d'achats des autres clients \n"
+            "Utilisez une CTE pour obtenir les clients qui ont un total d'achat supérieur à la moyenne des totaux d'achats "
+            "des autres clients \n"
             "Etapes: \n"
             "- Faire une query pour obtenir les ventes totales par client \n"
             "- La stocker dans une subquery \n"
             "- A partir de cette subquery, faire un query pour obtenir la moyenne de ces ventes totales \n"
             "- La stocker dans une 2nde subquery \n"
-            "- A partir de cette deuxième subquery, récupérer les clients et leur somme totales dépensées, et filtrer sur les clients dont la moyenne est supérieure à celle calculée dans la 2e subquery",
+            "- A partir de cette deuxième subquery, récupérer les clients et leur somme totales dépensées, et filtrer "
+            "sur les clients dont la moyenne est supérieure à celle calculée dans la 2e subquery",
         },
         {
             "exercise_name": "ex08A_meetings_merged_df",

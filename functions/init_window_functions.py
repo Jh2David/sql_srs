@@ -1,13 +1,36 @@
 import json
+import random
 
 import pandas as pd
-import random
+
 
 def init_window_functions(con):
     """
+    Initializes the database with tables and exercises related to SQL window functions.
 
-    :param con:
-    :return:
+    This function sets up tables and inserts exercise questions and metadata into the
+    database to facilitate learning and practicing SQL window functions. The function
+    performs the following tasks:
+
+    1. Creates a `df_capteurs` table from a CSV file containing data for a single sensor.
+    2. Creates a `df_capteurs_A_B` table by combining data for two sensors (A and B),
+       where data for sensor B is derived from sensor A with randomized visitor counts.
+    3. Creates a `wages` table containing employee wage data, including names,
+       departments, and salaries.
+    4. Populates `exercise_questions` and `memory_state` tables with exercises
+       and questions related to window functions for learning purposes.
+
+    Args:
+        con (duckdb.Connection): A DuckDB connection object used to execute SQL
+                                 queries and manage database operations.
+
+    Returns:
+        None
+
+    Notes:
+        - Requires the input CSV file `data/09_window_functions/capteur_a_retrail.csv`
+          to exist with appropriate structure for the `df_capteurs` table.
+        - Assumes the `exercise_questions` and `memory_state` tables are already
     """
 
     # Capteur A Table
@@ -19,28 +42,89 @@ def init_window_functions(con):
     df_porte_b = df_capteurs.copy()
     # On ajoute une porte_b
     df_porte_b["capteur_id"] = "porte_b"
-    df_porte_b["visiteurs_count"] = df_porte_b["visiteurs_count"].apply(lambda x: round(x * (random.random() + 0.5), 0))
+    df_porte_b["visiteurs_count"] = df_porte_b["visiteurs_count"].apply(
+        lambda x: round(x * (random.random() + 0.5), 0)
+    )
     df_capteurs_A_B = pd.concat([df_capteurs, df_porte_b])
-    con.execute("CREATE TABLE IF NOT EXISTS df_capteurs_A_B AS SELECT * FROM df_capteurs_A_B")
+    con.execute(
+        "CREATE TABLE IF NOT EXISTS df_capteurs_A_B AS SELECT * FROM df_capteurs_A_B"
+    )
 
     # Wages table
     data = {
-    'name': ['Toufik', 'Jean-Nicolas', 'Daniel', 'Kaouter', 'Sylvie',
-             'Sebastien', 'Diane', 'Romain', 'François', 'Anna',
-             'Zeinaba', 'Gregory', 'Karima', 'Arthur', 'Benjamin'],
-    'wage': [60000, 75000, 55000, 100000, 70000,
-             90000, 65000, 100000, 68000, 85000,
-             100000, 120000, 95000, 83000, 110000],
-    'department': ['IT', 'HR', 'SALES', 'IT', 'IT',
-                   'HR', 'SALES', 'IT', 'HR', 'SALES',
-                   'IT', 'IT', 'HR', 'SALES', 'CEO'],
-    'sex': ['H', 'H', 'H', 'F', 'F',
-           'H', 'F', 'H', 'H', 'F',
-           'F', 'H', 'F', 'H', 'H',]
-}
+        "name": [
+            "Toufik",
+            "Jean-Nicolas",
+            "Daniel",
+            "Kaouter",
+            "Sylvie",
+            "Sebastien",
+            "Diane",
+            "Romain",
+            "François",
+            "Anna",
+            "Zeinaba",
+            "Gregory",
+            "Karima",
+            "Arthur",
+            "Benjamin",
+        ],
+        "wage": [
+            60000,
+            75000,
+            55000,
+            100000,
+            70000,
+            90000,
+            65000,
+            100000,
+            68000,
+            85000,
+            100000,
+            120000,
+            95000,
+            83000,
+            110000,
+        ],
+        "department": [
+            "IT",
+            "HR",
+            "SALES",
+            "IT",
+            "IT",
+            "HR",
+            "SALES",
+            "IT",
+            "HR",
+            "SALES",
+            "IT",
+            "IT",
+            "HR",
+            "SALES",
+            "CEO",
+        ],
+        "sex": [
+            "H",
+            "H",
+            "H",
+            "F",
+            "F",
+            "H",
+            "F",
+            "H",
+            "H",
+            "F",
+            "F",
+            "H",
+            "F",
+            "H",
+            "H",
+        ],
+    }
     wages = pd.DataFrame(data)
-    con.execute("DROP TABLE wages;"
-                "CREATE TABLE IF NOT EXISTS wages AS SELECT * FROM wages")
+    con.execute(
+        "DROP TABLE wages;" "CREATE TABLE IF NOT EXISTS wages AS SELECT * FROM wages"
+    )
 
     exercises_and_questions = [
         {
@@ -158,7 +242,7 @@ def init_window_functions(con):
             "exercise_name": "ex02F_row_number_wages",
             "tables": ["wages"],
             "question": "Déterminer l'index de la table\n"
-                        "Il s'agit tout simplement de connaître le numéro de la ligne",
+            "Il s'agit tout simplement de connaître le numéro de la ligne",
         },
         {
             "exercise_name": "ex02G_row_number_wages",
@@ -184,55 +268,54 @@ def init_window_functions(con):
             "exercise_name": "ex02K_rank_wages",
             "tables": ["wages"],
             "question": "Comment gérer les égalités?\n"
-                        "Obtenez le classement des salaires, du plus gros au plus petit, et par département.\n"
-                        "Utilisez RANK() (LIMIT 10)",
+            "Obtenez le classement des salaires, du plus gros au plus petit, et par département.\n"
+            "Utilisez RANK() (LIMIT 10)",
         },
         {
             "exercise_name": "ex02L_rank_wages",
             "tables": ["wages"],
             "question": "Comment gérer les égalités?\n"
-                        "Obtenez le classement des salaires, du plus gros au plus petit, et par département.\n"
-                        "Utilisez DENSE_RANK() (LIMIT 10)",
+            "Obtenez le classement des salaires, du plus gros au plus petit, et par département.\n"
+            "Utilisez DENSE_RANK() (LIMIT 10)",
         },
         {
             "exercise_name": "ex02M_rank_wages",
             "tables": ["wages"],
             "question": "Obtenez le classement des salaires par sexe.\n"
-                        "(S'il y a une égalité pour la première place, on souhaite que le 3ème ait le rang '2')",
+            "(S'il y a une égalité pour la première place, on souhaite que le 3ème ait le rang '2')",
         },
         {
             "exercise_name": "ex03A_df_capteurs_A_B",
             "tables": ["df_capteurs_A_B"],
             "question": "Faites une requête pour avoir la moyenne glissante des visiteurs les Samedi, pour le capteur "
-                        "porte_a et le capteur porte_b\n"
-                        "Utilisez la clause WHERE weekday = 7\n"
-                        "Mais attention, cette requête fonctionne parce que le fenêtrage se fait sur la donnée restante "
-                        "après la clause WHERE\n"
-                        "Si on enlève le WHERE weekday = 7, les calculs ne sont plus bons",
+            "porte_a et le capteur porte_b\n"
+            "Utilisez la clause WHERE weekday = 7\n"
+            "Mais attention, cette requête fonctionne parce que le fenêtrage se fait sur la donnée restante "
+            "après la clause WHERE\n"
+            "Si on enlève le WHERE weekday = 7, les calculs ne sont plus bons",
         },
         {
             "exercise_name": "ex03B_df_capteurs_A_B",
             "tables": ["df_capteurs_A_B"],
             "question": "Faites une requête pour avoir la moyenne glissante des visiteurs sur l'ensemble de la donnée, "
-                        "pour le capteur porte_a et le capteur porte_b\n"
-                        "On souhaite tous les jours de la semaine, c'est-à-dire la moyenne pour tous les lundi, "
-                        "les mardi, etc.\n"
-                        "On n'utilise plus cette fois-ci la clause WHERE\n"
+            "pour le capteur porte_a et le capteur porte_b\n"
+            "On souhaite tous les jours de la semaine, c'est-à-dire la moyenne pour tous les lundi, "
+            "les mardi, etc.\n"
+            "On n'utilise plus cette fois-ci la clause WHERE\n",
         },
         {
             "exercise_name": "ex03C_df_capteurs_A_B",
             "tables": ["df_capteurs_A_B"],
             "question": "Déterminer le classement entre les capteurs A et B (AS updated_ranking), quel est celui chaque "
-                        "semaine qui a le plus de visiteurs?\n"
-                        "Hint : Utiliser une CTE de la moyenne glissante des visiteurs sur l\'ensemble de "
-                        "la donnée (ex03B)"
+            "semaine qui a le plus de visiteurs?\n"
+            "Hint : Utiliser une CTE de la moyenne glissante des visiteurs sur l'ensemble de "
+            "la donnée (ex03B)",
         },
         {
             "exercise_name": "ex02N_qualify_wages",
             "tables": ["wages"],
-            "question": "Déterminer les salariés ayant le 2ème salaire max par département en opérant un filtrage index = 2\n"
+            "question": "Déterminer les salariés ayant le 2ème salaire max par département en opérant un filtrage index = 2\n",
         },
-
     ]
 
     # Insérer les exercices et les questions

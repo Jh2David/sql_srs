@@ -117,9 +117,9 @@ def init_window_functions(con):
             "exercise_name": "ex02B_partition_by_wages",
             "tables": ["wages"],
             "question": "Maintenant, on aimerait le plus gros salaire par département en face de chaque salaire pour "
-                        "calculer les écarts de salaires entre les employés d'un même département\n"
-                        "Il faut imaginer que vous faites une 'sous-table' pour chaque département (max_dpt_wage), "
-                        "et un MAX(wage) OVER() pour chacune de ces sous-tables",
+            "calculer les écarts de salaires entre les employés d'un même département\n"
+            "Il faut imaginer que vous faites une 'sous-table' pour chaque département (max_dpt_wage), "
+            "et un MAX(wage) OVER() pour chacune de ces sous-tables",
         },
         {
             "exercise_name": "ex02C_partition_by_wages",
@@ -130,34 +130,63 @@ def init_window_functions(con):
             "exercise_name": "ex02D_partition_by_wages",
             "tables": ["wages"],
             "question": "Créez une nouvelle colonne 'is_max' qui indique si un salarié est au max de son département "
-                        "(max_dpt_wage)",
+            "(max_dpt_wage)",
         },
         {
             "exercise_name": "ex02E_partition_by_wages",
             "tables": ["wages"],
             "question": "Utiliser la colonne 'is_max' pour déterminer les salariés ayant le 2ème salaire max\n"
-                        "Hint : Utilisez une CTE pour stocker le 1er salaire maximum par département, puis filtrer "
-                        "cette CTE pour exclure le MAX et refaites la même procédure pour trouver le nouveau MAX "
-                        "sur les records restants" ,
+            "Hint : Utilisez une CTE pour stocker le 1er salaire maximum par département, puis filtrer "
+            "cette CTE pour exclure le MAX et refaites la même procédure pour trouver le nouveau MAX "
+            "sur les records restants",
         },
         {
             "exercise_name": "ex01F_partition_by_df_capteurs",
             "tables": ["df_capteurs"],
             "question": "Mettez en face de chaque visiteurs_count la moyenne sur les 7 derniers jours, en partitionnant "
-                        "la table en fonction du jour de la semaine, puis multipliez cette colonne par 0.8 pour créer "
-                        "votre nouveau seuil\n"
-                        "Note : Contrairement à l'ex01E, il s'agit de la moyenne glissante (ou mobile), cela permet par "
-                        "exemple de faire la moyenne des 7 derniers samedi au lieu des 7 derniers jours de la semaine",
+            "la table en fonction du jour de la semaine, puis multipliez cette colonne par 0.8 pour créer "
+            "votre nouveau seuil\n"
+            "Note : Contrairement à l'ex01E, il s'agit de la moyenne glissante (ou mobile), cela permet par "
+            "exemple de faire la moyenne des 7 derniers samedi au lieu des 7 derniers jours de la semaine",
         },
         {
             "exercise_name": "ex01G_partition_by_df_capteurs",
             "tables": ["df_capteurs"],
             "question": "Attention ! \n"
-                        "Il se trouve que la dataframe de l'ex01F était ordonée par date, mais rien ne garantit que ce "
-                        "sera toujours le cas! \n"
-                        "Que se passerait-il si les jours n'étaient pas correctement ordonnés?\n"
-                        "Hint : Pour être sur que les données sont correctement triées avant de calculer les "
-                        "indicateurs, il faut utiliser ORDER BY à l'intérieur de la clause OVER.",
+            "Il se trouve que la dataframe de l'ex01F était ordonée par date, mais rien ne garantit que ce "
+            "sera toujours le cas! \n"
+            "Que se passerait-il si les jours n'étaient pas correctement ordonnés?\n"
+            "Hint : Pour être sur que les données sont correctement triées avant de calculer les "
+            "indicateurs, il faut utiliser ORDER BY à l'intérieur de la clause OVER.",
+        },
+        {
+            "exercise_name": "ex01H_lag_df_capteurs",
+            "tables": ["df_capteurs"],
+            "question": "Utilisez LAG() afin de déterminer le nombre de visiteurs de la ligne précédente "
+            "(AS ligne_precedente) ",
+        },
+        {
+            "exercise_name": "ex01I_lag_df_capteurs",
+            "tables": ["df_capteurs"],
+            "question": "LAG after WHERE\n"
+            "On pourrait s'attendre à ce que le LAG soit opéré sur l'ensemble de la table, et que le WHERE "
+            "vienne ensuite filtrer et rendre l'interprétation difficile. Mais ce n'est pas ce qui se passe. "
+            "Utilisez par exemple WHERE weekday = 7 pour confirmer cela",
+        },
+        {
+            "exercise_name": "ex01J_lag_df_capteurs",
+            "tables": ["df_capteurs"],
+            "question": "LAG sur toute la dataframe\n"
+            "Exercice: mettez, en face de chaque 'visiteurs_count', le visiteurs_count du même jour de la "
+            "semaine précédente",
+        },
+        {
+            "exercise_name": "ex01K_lag_df_capteurs",
+            "tables": ["df_capteurs"],
+            "question": "Déterminer la différence visiteurs_count et lag_visiteurs_count calculé dans l'exercice précédent "
+            "(ex01J)\n"
+            "Si vous êtes motivés, calculez le pourcentage de changement d'une semaine sur l'autre "
+            "(AS pct_change, toujours pour le même jour)",
         },
     ]
 

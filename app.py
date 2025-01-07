@@ -9,6 +9,7 @@ from typing import Optional, Tuple
 import duckdb
 import pandas as pd
 import streamlit as st
+from streamlit_ace import st_ace
 
 if "data" not in os.listdir():
     print("creating folder data")
@@ -151,7 +152,15 @@ with st.sidebar:
 if question:
     st.subheader(question)
 
-query = st.text_area(label="votre code SQL ici", key="user_input")
+query = st_ace(
+    placeholder="Écrivez votre code SQL ici",
+    language="sql",
+    theme="monokai",
+    height=300,
+    key="ace-editor",
+    font_size=16,
+    tab_size=4,
+)
 
 if query:
     check_users_solution(query)

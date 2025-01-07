@@ -9,6 +9,7 @@ from typing import Optional, Tuple
 import duckdb
 import pandas as pd
 import streamlit as st
+from streamlit_ace import st_ace
 
 if "data" not in os.listdir():
     print("creating folder data")
@@ -37,7 +38,7 @@ def check_users_solution(user_query: str) -> None:
         result = result[solution_df.columns]
         st.dataframe(result.compare(solution_df))
         if result.compare(solution_df).shape == (0, 0):
-            st.write("Correct !")
+            st.success("Résultat correct !")
             st.balloons()
     except KeyError as e:
         st.write("Some columns are missing")
@@ -84,6 +85,7 @@ def get_exercise(
     # Mettre à jour le thème dans session_state uniquement si sélectionné
     if theme != st.session_state.theme:
         st.session_state.theme = theme
+        st.session_state.user_input = ""
         st.rerun()
 
     # Vérifier si un thème est sélectionné
@@ -138,7 +140,6 @@ def get_exercise(
         return None, None, None
 
     solution = con.execute(sql_answer).df()
-
     return exercise_df, sql_answer, solution, sql_question
 
 
@@ -151,10 +152,22 @@ with st.sidebar:
 if question:
     st.subheader(question)
 
-query = st.text_area(label="votre code SQL ici", key="user_input")
+query = st_ace(
+    placeholder="Écrivez votre code SQL ici",
+    language="sql",
+    theme="monokai",
+    height=300,
+    key="ace-editor",
+    font_size=16,
+    tab_size=4,
+)
 
 if query:
     check_users_solution(query)
+
+if st.button("Vérifier"):
+    if query.strip():  # Vérifie que la requête n'est pas vide
+        check_users_solution(query)
 
 # Ajouter du style CSS pour centrer le texte des boutons et uniformiser leur taille
 st.markdown(
@@ -200,6 +213,7 @@ with col4:
     if st.button("Reset", use_container_width=True):
         con.execute(f"UPDATE memory_state SET last_reviewed = '1970-01-01'")
         st.rerun()
+
 tab2, tab3 = st.tabs(["Tables", "Solution"])
 
 with tab2:

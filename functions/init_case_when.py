@@ -5,9 +5,19 @@ import pandas as pd
 
 def init_case_when(con):
     """
+    Initializes the database for the "07_case_when" theme by creating tables and
+    populating them with data. It also sets up several exercises and their questions
+    related to the usage of the CASE WHEN statement in SQL queries.
 
-    :param con:
-    :return:
+    This function performs the following tasks:
+    1. Creates tables for wage data, product sales data, and football match data.
+    2. Inserts various exercises and their associated questions into the `exercise_questions`
+       and `memory_state` tables to be used for practicing SQL queries with CASE WHEN logic.
+    3. The exercises cover topics such as salary adjustments, calculating total revenue with discounts,
+       and analyzing football match results using conditional statements.
+
+    :param con: DuckDB connection object to execute SQL queries.
+    :return: None
     """
 
     # Wages table
@@ -80,8 +90,9 @@ def init_case_when(con):
     con.execute("CREATE TABLE IF NOT EXISTS df AS SELECT * FROM df")
 
     # Foot Table
-    data = pd.read_csv("data/07_case_when/season-1011_csv.csv")
-    con.execute("CREATE TABLE IF NOT EXISTS data AS SELECT * FROM data")
+
+    df_foot = pd.read_csv("data/07_case_when/season_1011.csv")
+    con.execute("CREATE TABLE IF NOT EXISTS df_foot AS SELECT * FROM df_foot")
 
     exercises_and_questions = [
         {
@@ -130,7 +141,7 @@ def init_case_when(con):
         },
         {
             "exercise_name": "ex03A_case_when_football",
-            "tables": ["data"],
+            "tables": ["df_foot"],
             "question": "Combien de Match Lille a gagné?\n"
             "- A domicile\n"
             "- A l'extérieur\n\n"
@@ -150,7 +161,7 @@ def init_case_when(con):
         },
         {
             "exercise_name": "ex03B_case_when_football",
-            "tables": ["data"],
+            "tables": ["df_foot"],
             "question": "On a gagné 13 matchs sur combien?\n"
             "Comment faire pour ne pas prendre en compte tous ces matchs qui ne concernent pas Lille?\n\n"
             "Attention :\n"

@@ -227,6 +227,11 @@ def init_window_functions(con):
                         "Hint : Utiliser une CTE de la moyenne glissante des visiteurs sur l\'ensemble de "
                         "la donnée (ex03B)"
         },
+        {
+            "exercise_name": "ex02N_qualify_wages",
+            "tables": ["wages"],
+            "question": "Déterminer les salariés ayant le 2ème salaire max par département en opérant un filtrage index = 2\n"
+        },
 
     ]
 

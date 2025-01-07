@@ -16,65 +16,22 @@ def init_window_functions(con):
 
     # Wages table
     data = {
-        "name": [
-            "Toufik",
-            "Jean-Nicolas",
-            "Daniel",
-            "Kaouter",
-            "Sylvie",
-            "Sebastien",
-            "Diane",
-            "Romain",
-            "François",
-            "Anna",
-            "Zeinaba",
-            "Gregory",
-            "Karima",
-            "Arthur",
-            "Benjamin",
-        ],
-        "wage": [
-            60000,
-            75000,
-            55000,
-            80000,
-            70000,
-            90000,
-            65000,
-            72000,
-            68000,
-            85000,
-            100000,
-            120000,
-            95000,
-            83000,
-            110000,
-        ],
-        "department": [
-            "IT",
-            "HR",
-            "SALES",
-            "IT",
-            "IT",
-            "HR",
-            "SALES",
-            "IT",
-            "HR",
-            "SALES",
-            "IT",
-            "IT",
-            "HR",
-            "SALES",
-            "CEO",
-        ],
-    }
+    'name': ['Toufik', 'Jean-Nicolas', 'Daniel', 'Kaouter', 'Sylvie',
+             'Sebastien', 'Diane', 'Romain', 'François', 'Anna',
+             'Zeinaba', 'Gregory', 'Karima', 'Arthur', 'Benjamin'],
+    'wage': [60000, 75000, 55000, 100000, 70000,
+             90000, 65000, 100000, 68000, 85000,
+             100000, 120000, 95000, 83000, 110000],
+    'department': ['IT', 'HR', 'SALES', 'IT', 'IT',
+                   'HR', 'SALES', 'IT', 'HR', 'SALES',
+                   'IT', 'IT', 'HR', 'SALES', 'CEO'],
+    'sex': ['H', 'H', 'H', 'F', 'F',
+           'H', 'F', 'H', 'H', 'F',
+           'F', 'H', 'F', 'H', 'H',]
+}
     wages = pd.DataFrame(data)
-    wages.assign(
-        max_per_dpt=lambda df_: df_[["department", "wage"]]
-        .groupby("department")
-        .transform("max")
-    ).sort_values("department")
-    con.execute("CREATE TABLE IF NOT EXISTS wages AS SELECT * FROM wages")
+    con.execute("DROP TABLE wages;"
+                "CREATE TABLE IF NOT EXISTS wages AS SELECT * FROM wages")
 
     exercises_and_questions = [
         {
@@ -187,6 +144,32 @@ def init_window_functions(con):
             "(ex01J)\n"
             "Si vous êtes motivés, calculez le pourcentage de changement d'une semaine sur l'autre "
             "(AS pct_change, toujours pour le même jour)",
+        },
+        {
+            "exercise_name": "ex02F_row_number_wages",
+            "tables": ["wages"],
+            "question": "Déterminer l'index de la table\n"
+                        "Il s'agit tout simplement de connaître le numéro de la ligne",
+        },
+        {
+            "exercise_name": "ex02G_row_number_wages",
+            "tables": ["wages"],
+            "question": "Déterminer maintenant le numéro de ligne par département l'index de la table",
+        },
+        {
+            "exercise_name": "ex02H_row_number_wages",
+            "tables": ["wages"],
+            "question": "Obtenez le classement entre les hommes et les femmes",
+        },
+        {
+            "exercise_name": "ex02I_row_number_wages",
+            "tables": ["wages"],
+            "question": "Déterminez le numéro de ligne par département, du plus gros au plus petit salaire (LIMIT 10)",
+        },
+        {
+            "exercise_name": "ex02J_row_number_wages",
+            "tables": ["wages"],
+            "question": "Obtenez le classement des salaires par sexe (LIMIT 10)",
         },
     ]
 

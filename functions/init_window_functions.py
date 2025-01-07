@@ -1,7 +1,7 @@
 import json
 
 import pandas as pd
-
+import random
 
 def init_window_functions(con):
     """
@@ -10,9 +10,18 @@ def init_window_functions(con):
     :return:
     """
 
-    # Capteurs Table
+    # Capteur A Table
     df_capteurs = pd.read_csv("data/09_window_functions/capteur_a_retrail.csv")
     con.execute("CREATE TABLE IF NOT EXISTS df_capteurs AS SELECT * FROM df_capteurs")
+
+    # Capteurs A & B Table
+    random.seed(42)
+    df_porte_b = df_capteurs.copy()
+    # On ajoute une porte_b
+    df_porte_b["capteur_id"] = "porte_b"
+    df_porte_b["visiteurs_count"] = df_porte_b["visiteurs_count"].apply(lambda x: round(x * (random.random() + 0.5), 0))
+    df_capteurs_A_B = pd.concat([df_capteurs, df_porte_b])
+    con.execute("CREATE TABLE IF NOT EXISTS df_capteurs_A_B AS SELECT * FROM df_capteurs_A_B")
 
     # Wages table
     data = {
@@ -171,6 +180,54 @@ def init_window_functions(con):
             "tables": ["wages"],
             "question": "Obtenez le classement des salaires par sexe (LIMIT 10)",
         },
+        {
+            "exercise_name": "ex02K_rank_wages",
+            "tables": ["wages"],
+            "question": "Comment gérer les égalités?\n"
+                        "Obtenez le classement des salaires, du plus gros au plus petit, et par département.\n"
+                        "Utilisez RANK() (LIMIT 10)",
+        },
+        {
+            "exercise_name": "ex02L_rank_wages",
+            "tables": ["wages"],
+            "question": "Comment gérer les égalités?\n"
+                        "Obtenez le classement des salaires, du plus gros au plus petit, et par département.\n"
+                        "Utilisez DENSE_RANK() (LIMIT 10)",
+        },
+        {
+            "exercise_name": "ex02M_rank_wages",
+            "tables": ["wages"],
+            "question": "Obtenez le classement des salaires par sexe.\n"
+                        "(S'il y a une égalité pour la première place, on souhaite que le 3ème ait le rang '2')",
+        },
+        {
+            "exercise_name": "ex03A_df_capteurs_A_B",
+            "tables": ["df_capteurs_A_B"],
+            "question": "Faites une requête pour avoir la moyenne glissante des visiteurs les Samedi, pour le capteur "
+                        "porte_a et le capteur porte_b\n"
+                        "Utilisez la clause WHERE weekday = 7\n"
+                        "Mais attention, cette requête fonctionne parce que le fenêtrage se fait sur la donnée restante "
+                        "après la clause WHERE\n"
+                        "Si on enlève le WHERE weekday = 7, les calculs ne sont plus bons",
+        },
+        {
+            "exercise_name": "ex03B_df_capteurs_A_B",
+            "tables": ["df_capteurs_A_B"],
+            "question": "Faites une requête pour avoir la moyenne glissante des visiteurs sur l'ensemble de la donnée, "
+                        "pour le capteur porte_a et le capteur porte_b\n"
+                        "On souhaite tous les jours de la semaine, c'est-à-dire la moyenne pour tous les lundi, "
+                        "les mardi, etc.\n"
+                        "On n'utilise plus cette fois-ci la clause WHERE\n"
+        },
+        {
+            "exercise_name": "ex03C_df_capteurs_A_B",
+            "tables": ["df_capteurs_A_B"],
+            "question": "Déterminer le classement entre les capteurs A et B (AS updated_ranking), quel est celui chaque "
+                        "semaine qui a le plus de visiteurs?\n"
+                        "Hint : Utiliser une CTE de la moyenne glissante des visiteurs sur l\'ensemble de "
+                        "la donnée (ex03B)"
+        },
+
     ]
 
     # Insérer les exercices et les questions

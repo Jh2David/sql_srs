@@ -165,10 +165,6 @@ query = st_ace(
 if query:
     check_users_solution(query)
 
-if st.button("Vérifier"):
-    if query.strip():  # Vérifie que la requête n'est pas vide
-        check_users_solution(query)
-
 # Ajouter du style CSS pour centrer le texte des boutons et uniformiser leur taille
 st.markdown(
     """

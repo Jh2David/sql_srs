@@ -8,6 +8,7 @@ from functions.init_grouping_sets import init_grouping_sets
 from functions.init_inner_joins import init_inner_joins
 from functions.init_left_joins import init_left_joins
 from functions.init_self_joins import init_self_joins
+from functions.init_window_functions import init_window_functions
 
 # DuckDB connection
 con = duckdb.connect(database="data/exercises_sql_tables.duckdb", read_only=False)
@@ -47,5 +48,6 @@ init_self_joins(con)
 init_group_by(con)
 init_case_when(con)
 init_grouping_sets(con)
+init_window_functions(con)
 
 con.close()

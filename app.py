@@ -11,6 +11,16 @@ import pandas as pd
 import streamlit as st
 from streamlit_ace import st_ace
 
+# Initialisation des clés dans st.session_state
+if "theme" not in st.session_state:
+    st.session_state.theme = None
+
+if "exercise_name" not in st.session_state:
+    st.session_state.exercise_name = None
+
+if "user_query" not in st.session_state:
+    st.session_state.user_query = ""
+
 if "data" not in os.listdir():
     print("creating folder data")
     logging.error(os.listdir())
@@ -59,95 +69,86 @@ def get_exercise(
 
     :param con: Connection to the DuckDB database.
     :return: A tuple containing:
-             - exercise (pd.DataFrame): The exercise DataFrame.
-             - answer (str): The SQL solution as a string.
-             - solution_df (pd.DataFrame): The solution DataFrame.
-             If an error occurs, returns (None, None, None).
+             - exercise_df (pd.DataFrame): The exercise DataFrame.
+             - sql_answer (str): The SQL solution as a string.
+             - solution (pd.DataFrame): The solution DataFrame.
+             - sql_question (str): The question for the exercise.
     """
 
-    available_themes_df = con.execute(
+    # Récupération des thèmes disponibles
+    available_themes = ["00_all_themes"] + con.execute(
         "SELECT DISTINCT theme FROM memory_state ORDER BY theme"
-    ).df()
+    ).df()["theme"].tolist()
 
-    if "theme" not in st.session_state:
-        st.session_state.theme = None
+    # Sélection du thème, avec gestion des erreurs
+    current_theme = st.session_state.get("theme", "00_all_themes")
+    if current_theme not in available_themes:
+        current_theme = "00_all_themes"
 
     theme = st.selectbox(
         "What would you like to review?",
-        available_themes_df["theme"].unique(),
-        index=(
-            available_themes_df["theme"].unique().tolist().index(st.session_state.theme)
-            if st.session_state.theme
-            else 0
-        ),
+        available_themes,
+        index=available_themes.index(current_theme),
         placeholder="Select a theme...",
     )
-    # Mettre à jour le thème dans session_state uniquement si sélectionné
-    if theme != st.session_state.theme:
+
+    # Mettre à jour le thème dans session_state et redémarrer si nécessaire
+    if theme != st.session_state.get("theme"):
         st.session_state.theme = theme
         st.session_state.user_query = ""
         st.rerun()
 
-    # Vérifier si un thème est sélectionné
-    if theme is None:
-        st.warning("Please select a theme to load the exercises.")
-        return None, None, None
-
-    st.write("You selected:", theme)
-
-    select_exercise_query = f"SELECT * FROM memory_state WHERE theme = '{theme}'"
-    exercise_df = (
-        con.execute(select_exercise_query)
-        .df()
-        .sort_values("last_reviewed")
-        .reset_index(drop=True)
+    # Préparation de la requête SQL en fonction du thème sélectionné
+    sql_query = (
+        "SELECT * FROM memory_state WHERE theme LIKE '0%' ORDER BY last_reviewed"
+        if theme == "00_all_themes"
+        else f"SELECT * FROM memory_state WHERE theme = '{theme}'"
     )
+    exercise_df = con.execute(sql_query).df()
 
-    # Assurez-vous que l'exercice existe
+    # Gestion du cas où aucun exercice n'est trouvé
     if exercise_df.empty:
-        st.warning("No exercises found for this theme.")
-        return None, None, None
+        st.error("No exercises found for this theme.")
+        return None, None, None, None
 
+    # Trier et sélectionner le premier exercice
+    exercise_df = exercise_df.sort_values("last_reviewed").reset_index(drop=True)
     st.dataframe(exercise_df)
 
-    # Choisir le premier exercice
-    exercise_name = exercise_df.loc[0, "exercise_name"]
-
-    if "exercise_name" not in st.session_state:
-        st.session_state.exercise_name = None
-
+    exercise_name, actual_theme = exercise_df.loc[0, ["exercise_name", "theme"]]
     if exercise_name != st.session_state.get("exercise_name"):
         st.session_state.exercise_name = exercise_name
-        st.session_state.user_query = ""  # Réinitialiser le contenu de st_ace
+        st.session_state.user_query = ""
         st.rerun()
 
-    # Charger la question associée à l'exercice
-    sql_question = con.execute(
+    # Récupération de la question associée
+    sql_question_result = con.execute(
         f"""
-           SELECT question
-           FROM exercise_questions
-           WHERE theme = '{theme}' AND exercise_name = '{exercise_name}'
-       """
+        SELECT question FROM exercise_questions
+        WHERE theme = '{actual_theme}' AND exercise_name = '{exercise_name}'
+        """
     ).fetchone()
+    sql_question = (
+        sql_question_result[0] if sql_question_result else "No question available."
+    )
 
-    # Vérifier si la question est trouvée
-    if sql_question is None:
-        st.warning(
-            f"No question found for exercise '{exercise_name}' in theme '{theme}'."
-        )
-        sql_question = "No question available for this exercise."
-    else:
-        sql_question = sql_question[0]  # Extraire la question du résultat de la requête
-
-    # Charger le fichier SQL de l'exercice
+    # Lecture du fichier SQL correspondant
     try:
-        with open(f"answers/{theme}/{exercise_name}.sql", "r") as f:
+        with open(f"answers/{actual_theme}/{exercise_name}.sql", "r") as f:
             sql_answer = f.read()
     except FileNotFoundError:
-        st.error(f"Solution file for exercise '{exercise_name}' not found.")
-        return None, None, None
+        st.error(
+            f"Solution file for '{exercise_name}' not found in theme '{actual_theme}'."
+        )
+        return None, None, None, None
 
-    solution = con.execute(sql_answer).df()
+    # Exécution de la solution SQL
+    try:
+        solution = con.execute(sql_answer).df()
+    except Exception as e:
+        st.error(f"Error executing the solution for '{exercise_name}': {e}")
+        return None, None, None, None
+
     return exercise_df, sql_answer, solution, sql_question
 
 
@@ -223,11 +224,22 @@ with col4:
 tab2, tab3 = st.tabs(["Tables", "Solution"])
 
 with tab2:
-    exercise_tables = ast.literal_eval(exercise.loc[0, "tables"])
-    for table in exercise_tables:
-        st.write(f"table: {table}")
-        df_table = con.execute(f"SELECT * FROM {table}").df()
-        st.dataframe(df_table)
+    # Vérification que 'exercise' n'est ni None ni vide
+    if exercise is None or exercise.empty:
+        st.error(
+            "No exercise data found. Please check your theme selection or database."
+        )
+    else:
+        # Assurer que la colonne 'tables' existe et qu'elle est au bon format
+        try:
+            exercise_tables = ast.literal_eval(exercise.loc[0, "tables"])
+            # Afficher les tables si elles existent
+            for table in exercise_tables:
+                st.write(f"Table: {table}")
+                df_table = con.execute(f"SELECT * FROM {table}").df()
+                st.dataframe(df_table)
+        except (ValueError, SyntaxError) as e:
+            st.error(f"Error parsing tables data: {e}")
 
 with tab3:
     st.code(answer)

@@ -85,7 +85,7 @@ def get_exercise(
     # Mettre à jour le thème dans session_state uniquement si sélectionné
     if theme != st.session_state.theme:
         st.session_state.theme = theme
-        st.session_state.user_input = ""
+        st.session_state.user_query = ""
         st.rerun()
 
     # Vérifier si un thème est sélectionné
@@ -112,6 +112,14 @@ def get_exercise(
 
     # Choisir le premier exercice
     exercise_name = exercise_df.loc[0, "exercise_name"]
+
+    if "exercise_name" not in st.session_state:
+        st.session_state.exercise_name = None
+
+    if exercise_name != st.session_state.get("exercise_name"):
+        st.session_state.exercise_name = exercise_name
+        st.session_state.user_query = ""  # Réinitialiser le contenu de st_ace
+        st.rerun()
 
     # Charger la question associée à l'exercice
     sql_question = con.execute(
@@ -153,11 +161,13 @@ if question:
     st.subheader(question)
 
 query = st_ace(
+    value=st.session_state["user_query"],
     placeholder="Écrivez votre code SQL ici",
     language="sql",
     theme="monokai",
     height=300,
-    key="ace-editor",
+    key=f"ace-editor-{st.session_state.exercise_name}",
+    # key="ace-editor",
     font_size=16,
     tab_size=4,
 )
@@ -194,7 +204,7 @@ def create_button(col, nb_days):
             st.rerun()
 
 
-# Créer 4 colonnes
+# Créer 4 colonnesis
 col1, col2, col3, col4 = st.columns(4)
 
 # Liste des jours pour les boutons

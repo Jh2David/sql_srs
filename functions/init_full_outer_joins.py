@@ -1,3 +1,5 @@
+from datetime import date
+
 import pandas as pd
 
 
@@ -82,13 +84,13 @@ def init_full_outer_joins(con):
     # ----------------------------------------------------------------------------------
     # Exercice 3 (voir cours) : outer join pour rassembler les stores_et_produits avec le détail des produits
     con.execute(
-        """
-        INSERT INTO memory_state (theme, exercise_name, tables, last_reviewed)
+        f"""
+        INSERT OR IGNORE INTO memory_state (theme, exercise_name, tables, last_reviewed)
         VALUES (
             '04_full_outer_joins',
              'ex01_stores_and_products_and_df_products',
              '["stores_and_products", "df_products"]',
-             '1970-01-01'
+             '{date.today()}'
              )
         """
     )

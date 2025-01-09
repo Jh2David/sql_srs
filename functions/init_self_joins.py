@@ -1,4 +1,5 @@
 import random
+from datetime import date
 
 random.seed(42)
 import pandas as pd
@@ -35,13 +36,13 @@ def init_self_joins(con):
     # - Récupérer les lignes où la difference entre la première date et la seconde est = 1
 
     con.execute(
-        """
-        INSERT INTO memory_state (theme, exercise_name, tables, last_reviewed)
+        f"""
+        INSERT OR IGNORE INTO memory_state (theme, exercise_name, tables, last_reviewed)
         VALUES (
             '05_self_joins',
              'ex01_df_sales',
              '["df_sales"]',
-             '1970-01-01'
+             '{date.today()}'
              )
         """
     )

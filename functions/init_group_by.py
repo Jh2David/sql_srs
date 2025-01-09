@@ -1,5 +1,6 @@
 import json
 import random
+from datetime import date
 
 import pandas as pd
 
@@ -177,12 +178,12 @@ def init_group_by(con):
         # EXERCICES
         con.execute(
             f"""
-            INSERT INTO memory_state (theme, exercise_name, tables, last_reviewed)
+            INSERT OR IGNORE INTO memory_state (theme, exercise_name, tables, last_reviewed)
             VALUES (
                 '06_group_by',
                  '{exercise_name}',
                  '{tables}',
-                 '1970-01-01'
+                 '{date.today()}'
                  )
             """
         )

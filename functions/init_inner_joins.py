@@ -1,4 +1,5 @@
 import json
+from datetime import date
 
 import pandas as pd
 
@@ -94,19 +95,33 @@ def init_inner_joins(con):
         tables = json.dumps(exercise["tables"])  # Convertir en JSON
         question = exercise["question"]
 
-        # Ajouter dans `memory_state`
-        con.execute(
+        # Vérifier si l'exercice existe déjà dans memory_state
+        existing_exercise = con.execute(
             """
-            INSERT INTO memory_state (theme, exercise_name, tables, last_reviewed)
-            VALUES (?, ?, ?, ?)
+            SELECT last_reviewed FROM memory_state 
+            WHERE theme = '02_inner_joins' AND exercise_name = ?
             """,
-            ("02_inner_joins", exercise_name, tables, "1970-01-01"),
-        )
+            (exercise_name,),
+        ).fetchone()
+
+        if not existing_exercise:
+            # Ajouter dans `memory_state`
+            con.execute(
+                f"""
+                INSERT INTO memory_state (theme, exercise_name, tables, last_reviewed)
+                VALUES (
+                    '02_inner_joins',
+                    '{exercise_name}',
+                    '{tables}', 
+                    '{date.today()}'
+                 )
+                """
+            )
 
         # Ajouter dans `exercise_questions`
         con.execute(
             """
-            INSERT INTO exercise_questions (theme, exercise_name, question)
+            INSERT OR IGNORE INTO exercise_questions (theme, exercise_name, question)
             VALUES (?, ?, ?)
             """,
             ("02_inner_joins", exercise_name, question),

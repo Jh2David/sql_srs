@@ -101,7 +101,7 @@ def init_inner_joins(con):
             SELECT last_reviewed FROM memory_state 
             WHERE theme = '02_inner_joins' AND exercise_name = ?
             """,
-            (exercise_name,)
+            (exercise_name,),
         ).fetchone()
 
         if not existing_exercise:

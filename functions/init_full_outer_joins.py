@@ -1,3 +1,5 @@
+from datetime import date
+
 import pandas as pd
 from datetime import date
 

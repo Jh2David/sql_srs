@@ -1,7 +1,7 @@
 from datetime import date
 
 import pandas as pd
-
+from datetime import date
 
 def init_full_outer_joins(con):
     """

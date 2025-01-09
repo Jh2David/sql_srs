@@ -1,5 +1,6 @@
 import io
 import json
+from datetime import date
 
 import pandas as pd
 
@@ -35,14 +36,6 @@ def init_cross_joins(con):
     food_items = pd.read_csv(io.StringIO(csv2))
     con.execute("CREATE TABLE IF NOT EXISTS food_items AS SELECT * FROM food_items")
 
-    # Ajoute des exercices à la table `memory_state` pour ce type de jointure
-    con.execute(
-        """
-        INSERT INTO memory_state(theme, exercise_name, tables, last_reviewed)
-        VALUES ('01_cross_joins', 'beverages_and_food', '["beverages", "food_items"]', '1970-01-01' )
-    """
-    )
-
     # ----------------------------------------------------------------------------------
     # EXERCISE 02
     # ----------------------------------------------------------------------------------
@@ -65,13 +58,6 @@ def init_cross_joins(con):
     """
     trademarks = pd.read_csv(io.StringIO(trademarks))
     con.execute("CREATE TABLE IF NOT EXISTS trademarks AS SELECT * FROM trademarks")
-
-    con.execute(
-        """
-            INSERT INTO memory_state(theme, exercise_name, tables, last_reviewed)
-            VALUES ('01_cross_joins', 'sizes_and_trademarks', '["sizes", "trademarks"]', '1970-01-01' )
-        """
-    )
 
     # ----------------------------------------------------------------------------------
     # EXERCISE 03
@@ -97,17 +83,10 @@ def init_cross_joins(con):
     quarters = pd.read_csv(io.StringIO(quarters))
     con.execute("CREATE TABLE IF NOT EXISTS quarters AS SELECT * FROM quarters")
 
-    con.execute(
-        """
-        INSERT INTO memory_state (theme, exercise_name, tables, last_reviewed)
-        VALUES ('01_cross_joins', 'hours_and_quarters', '["hours", "quarters"]', '1970-01-01')
-    """
-    )
-
     # ----------------------------------------------------------------------------------
     # Table + questions pour chaque exercice
     # ----------------------------------------------------------------------------------
-    exercises = [
+    exercises_and_questions = [
         {
             "exercise_name": "beverages_and_food",
             "tables": ["beverages", "food_items"],
@@ -125,31 +104,31 @@ def init_cross_joins(con):
         },
     ]
 
-    # Insérer les exercices et les questions dans les tables `memory_state` et `exercise_questions`
-    for exercise in exercises:
+    # Insérer les exercices et les questions
+    for exercise in exercises_and_questions:
         exercise_name = exercise["exercise_name"]
-        tables = json.dumps(exercise["tables"])  # Convertir en JSON
+        tables = json.dumps(exercise["tables"])
         question = exercise["question"]
 
-        # Ajouter dans `memory_state`
-        con.execute(
-            f"""
-                 INSERT INTO memory_state (theme, exercise_name, tables, last_reviewed)
-                 VALUES (
-                     '01_cross_joins',
-                     '{exercise_name}',
-                     '{tables}',
-                     '1970-01-01'
-                 )
-               """
-        )
-
-        # Ajouter dans `exercise_questions`
+        # QUESTIONS
         con.execute(
             """
-            INSERT INTO exercise_questions (theme, exercise_name, question)
-            VALUES (?, ?, ?)
-            ON CONFLICT (theme, exercise_name) DO NOTHING;
-            """,
+                    INSERT INTO exercise_questions (theme, exercise_name, question)
+                    VALUES (?, ?, ?)
+                    ON CONFLICT (theme, exercise_name) DO NOTHING;
+                """,
             ("01_cross_joins", exercise_name, question),
+        )
+
+        # EXERCICES
+        con.execute(
+            f"""
+                INSERT OR IGNORE INTO memory_state (theme, exercise_name, tables, last_reviewed)
+                VALUES (
+                    '01_cross_joins',
+                    '{exercise_name}',
+                    '{tables}',
+                    '{date.today()}'
+                    )
+            """
         )

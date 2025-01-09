@@ -1,5 +1,6 @@
 import json
 import random
+from datetime import date
 
 import pandas as pd
 
@@ -336,12 +337,12 @@ def init_window_functions(con):
         # EXERCICES
         con.execute(
             f"""
-                      INSERT INTO memory_state (theme, exercise_name, tables, last_reviewed)
-                      VALUES (
-                          '09_window_functions',
-                           '{exercise_name}',
-                           '{tables}',
-                           '1970-01-01'
-                           )
-                      """
+                INSERT OR IGNORE INTO memory_state (theme, exercise_name, tables, last_reviewed)
+                VALUES (
+                    '09_window_functions',
+                    '{exercise_name}',
+                    '{tables}',
+                    '{date.today()}'
+                    )
+            """
         )

@@ -11,16 +11,6 @@ import pandas as pd
 import streamlit as st
 from streamlit_ace import st_ace
 
-# Initialisation des clés dans st.session_state
-if "theme" not in st.session_state:
-    st.session_state.theme = None
-
-if "exercise_name" not in st.session_state:
-    st.session_state.exercise_name = None
-
-if "user_query" not in st.session_state:
-    st.session_state.user_query = ""
-
 if "data" not in os.listdir():
     print("creating folder data")
     logging.error(os.listdir())
@@ -205,7 +195,7 @@ def create_button(col, nb_days):
             st.rerun()
 
 
-# Créer 4 colonnesis
+# Créer 4 colonnes
 col1, col2, col3, col4 = st.columns(4)
 
 # Liste des jours pour les boutons
@@ -218,7 +208,7 @@ for i, n_days in enumerate(days_options):
 # Bouton Reset dans la dernière colonne
 with col4:
     if st.button("Reset", use_container_width=True):
-        con.execute(f"UPDATE memory_state SET last_reviewed = '1970-01-01'")
+        con.execute(f"UPDATE memory_state SET last_reviewed = '{date.today()}'")
         st.rerun()
 
 tab2, tab3 = st.tabs(["Tables", "Solution"])

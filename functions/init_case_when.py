@@ -1,4 +1,5 @@
 import json
+from datetime import date
 
 import pandas as pd
 
@@ -190,12 +191,12 @@ def init_case_when(con):
         # EXERCICES
         con.execute(
             f"""
-               INSERT INTO memory_state (theme, exercise_name, tables, last_reviewed)
+               INSERT OR IGNORE INTO memory_state (theme, exercise_name, tables, last_reviewed)
                VALUES (
                    '07_case_when',
                     '{exercise_name}',
                     '{tables}',
-                    '1970-01-01'
+                    '{date.today()}'
                     )
                """
         )

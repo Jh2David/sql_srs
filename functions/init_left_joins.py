@@ -1,4 +1,5 @@
 import json
+from datetime import date
 
 import pandas as pd
 
@@ -114,12 +115,12 @@ def init_left_joins(con):
         # Ajouter dans `memory_state`
         con.execute(
             f"""
-              INSERT INTO memory_state (theme, exercise_name, tables, last_reviewed)
+              INSERT OR IGNORE INTO memory_state (theme, exercise_name, tables, last_reviewed)
               VALUES (
                   '03_left_joins',
                   '{exercise_name}',
                   '{tables}',
-                  '1970-01-01'
+                  '{date.today()}'
                   )
               """
         )

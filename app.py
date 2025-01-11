@@ -139,6 +139,23 @@ def get_exercise(
         st.error(f"Error executing the solution for '{exercise_name}': {e}")
         return None, None, None, None
 
+    if "validated_exercises" not in st.session_state:
+        st.session_state.validated_exercises = set()  # Ensemble d'exercices validés
+
+    if "validated_count" not in st.session_state:
+        st.session_state.validated_count = 0  # Compteur d'exercices validés
+
+    # Bouton pour valider l'exercice
+    if exercise_name not in st.session_state.validated_exercises:
+        st.session_state.validated_exercises.add(exercise_name)
+        st.session_state.validated_count += 1
+        st.success(f"L'exercice '{exercise_name}' a été validé avec succès.")
+    else:
+        st.info(f"L'exercice '{exercise_name}' est déjà validé.")
+
+    # Affichage du compteur global
+    st.write(f"Nombre total d'exercices validés : {st.session_state.validated_count}")
+
     return exercise_df, sql_answer, solution, sql_question
 
 

@@ -33,7 +33,6 @@ try:
     # memory_state table
     con.execute(
         """
-        --DROP TABLE IF EXISTS memory_state;
         CREATE TABLE IF NOT EXISTS memory_state (
             theme TEXT,
             exercise_name TEXT,

@@ -101,8 +101,8 @@ def init_case_when(con):
             "tables": ["wages"],
             "question": "Appliquez des augmentations à la table des salaires classé par ordre de département \n"
             "- si le département est 'SALES' => 10% d'augmentation\n"
-            "- si le département est 'HR' => 05% d'augmentation\n"
-            "- si le département est 'IT' => 03% d'augmentation\n"
+            "- si le département est 'HR' => 5% d'augmentation\n"
+            "- si le département est 'IT' => 3% d'augmentation\n"
             "- pour les autres (le CEO) => 0% d'augmentation",
         },
         {
@@ -124,21 +124,21 @@ def init_case_when(con):
             "tables": ["wages"],
             "question": "Classer les revenus par catégories trié par l'average_salary \n"
             "Il est possible de faire des CASE WHEN à l'intérieur de la clause GROUP BY:\n"
-            "- Low si < 50 000\n"
-            "- medium si < 90 000\n"
-            "- sinon: high"
-            "Info: les CASE WHEN dans les GROUP BY ne sont pas la solution la plus facile à maintenir, les"
+            "- Low si <= 50 000\n"
+            "- Medium si < 90 000\n"
+            "- Sinon : High\n"
+            "Info: les CASE WHEN dans les GROUP BY ne sont pas la solution la plus facile à maintenir, les "
             "CTE conviennent mieux pour ce type de besoin",
         },
         {
             "exercise_name": "ex01C_case_when_wages",
             "tables": ["wages"],
             "question": "Classer les revenus par catégories trié par l'average_salary \n"
-            "Refaites l'exercice 01B en utilisant une CTE qui crée la colonne 'salary_range' avec un CASE"
+            "Refaites l'exercice 01B en utilisant une CTE qui crée la colonne 'salary_range' avec un CASE "
             "WHEN. Puis en faisant la moyenne des salaires par salary_range\n"
-            "- Low si < 50 000\n"
-            "- medium si < 90 000\n"
-            "- sinon: high",
+            "- Low si <= 50 000\n"
+            "- Medium si < 90 000\n"
+            "- Sinon : High",
         },
         {
             "exercise_name": "ex03A_case_when_football",
@@ -157,7 +157,7 @@ def init_case_when(con):
             "(en utilisant la règle ci-dessus)\n"
             "- Englobez ce CASE WHEN dans un count pour compter le total de victoire à domicile\n"
             "- Faites la même chose avec les matchs à l'extérieur\n\n"
-            "Hint: pour faire le count, il faut grouper sur quelque chose. "
+            "Hint: pour faire le count, il faut grouper sur quelque chose.\n "
             "Utilisez 'Div': on veut les matchs gagnés en L1.",
         },
         {
